@@ -1,0 +1,51 @@
+<p>在11年时，将我的博客从wordpress+mysql换成了django+sqlite，具体可见 <a class="reference external" href="http://jasonwu.me/2011/05/29/The-blog-from-wordpress-migrate-django.html">将博客从wordpress迁移到django</a> 这篇文章， 在折腾精神的感召下，在12年底我将博客程序又换掉了，这次换成了一个基于 <a class="reference external" href="http://sphinx.pocoo.org/">sphinx</a> 静态博客生成器 <a class="reference external" href="http://tinkerer.me/pages/documentation.html">tinkerer</a> ， <tt class="docutils literal">tinkerer</tt> 使用 <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>  作为标记语言，可以生成文章的分类，tag，支持评论和代码高亮，文章评论使用 <tt class="docutils literal">disqus</tt> , 高亮代码使用 <tt class="docutils literal">Pygments</tt> 。</p>
+<p>说说为什么使用 <tt class="docutils literal">tinkerer</tt> ，从打算把博客弄成静态站点开始我尝试了很多项目，如 <tt class="docutils literal">octpress</tt> 、 <tt class="docutils literal">jekyll</tt> 、 <tt class="docutils literal">pelican</tt> ，一次偶然的机会在 <tt class="docutils literal">bitbucket</tt> 上发现了 <tt class="docutils literal">tinkerer</tt> ，试用后感觉比较顺手，并且可以使用sphinx的扩展，我比较熟悉 <tt class="docutils literal">sphinx</tt> 和 <tt class="docutils literal">reStructuredText</tt> 的使用，平时就用这两个东西写文档，因此选择了基于 <tt class="docutils literal">sphinx</tt> 的 <tt class="docutils literal">tinkerer</tt> 。我最开始使用的是0.4 beta版还存在一些bug，然后我自己做了一些修改pull给作者，作者很快就接受了我的pull request，并表示感谢，现在1.0版本已经发布，基本上没有比较明显的bug了，只是有一些细节可能不是那么完美，还有一个就是主题很少，目前默认的几款主题，都不是很美观，目前我在移植一款主题。</p>
+<p>tinkerer的一些使用经验:</p>
+<p>＊ 自定义博客的侧边栏</p>
+<p>这里以创建友情链接的plugin作为例子，复制boilerplate主题目录下recent.html为一个新的文件，如friendslinks.html，然后改成如下这样就可以了:</p>
+<pre class="code html"><a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-1"></a>{#-
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-2"></a>    boilerplate/friendslinks.html
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-3"></a>    ~~~~~~~~~~~~~~~~~~~~~
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-4"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-5"></a>    Sidebar list of all tags.
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-6"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-7"></a>    :copyright: Copyright 2012 by Iñigo Serna
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-8"></a>    :license: FreeBSD, see LICENSE file
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-9"></a>-#}
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-10"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-11"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;widget&quot;</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-12"></a>    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Friends links<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-13"></a>    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-14"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.qdyongai.cn/?from=jason&quot;</span><span class="p">&gt;</span>龙哥-网站设计<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-15"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.zipeng.info/?from=jason&quot;</span><span class="p">&gt;</span>子鹏-kun的记事本<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-16"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.aaronw.me/?from=jason&quot;</span><span class="p">&gt;</span>王炜-我的技术生活<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-17"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://cuikai-wh.com/?from=jason&quot;</span><span class="p">&gt;</span>小轰-时光立方<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-18"></a>    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-19"></a><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre><p><strong>这里要注意的是默认的modern5主题是继承于boilerplate这个主题，因此只要修改boilerplate这个主题就可以了</strong></p>
+<p>然后在conf.py中加入这个文件的配置</p>
+<pre class="code python"><a name="rest_code_59ceab4634c0461680e69237fe913ecf-1"></a><span class="c1"># Add templates to be rendered in sidebar here</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-2"></a><span class="n">html_sidebars</span> <span class="o">=</span> <span class="p">{</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-3"></a>    <span class="s2">&quot;**&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;searchbox.html&quot;</span><span class="p">,</span> <span class="s2">&quot;categories.html&quot;</span><span class="p">,</span> <span class="s2">&quot;recent.html&quot;</span><span class="p">,</span> <span class="s2">&quot;friendslinks.html&quot;</span><span class="p">,</span> <span class="s2">&quot;weibo.html&quot;</span><span class="p">]</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-4"></a>    <span class="p">}</span>
+</pre><ul class="simple">
+<li>创建一个makefile，使用过 <tt class="docutils literal">sphinx</tt> 的人应该都知道 <tt class="docutils literal">sphinx</tt> 会生成一个 makefile，这样可以直接使用make html就可以生成文档了，tinker没有提供，那么我们可以自己写一个，让我么操作的更加自动化，如下是我 <tt class="docutils literal">Makefile</tt> 示例，大家可以参照下：</li>
+</ul>
+<pre class="code bash"><a name="rest_code_d76f05210fcb45b08b3804125c50f578-1"></a>all: build commit update
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-2"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-3"></a>clean:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-4"></a>             rm -rf blog/html/
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-5"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-6"></a>build:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-7"></a>             tinker -b
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-8"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-9"></a>serve:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-10"></a>             <span class="nb">cd</span> blog/html/ <span class="o">&amp;&amp;</span> python -m SimpleHTTPServer
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-11"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-12"></a>commit:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-13"></a>             hg commit ./ -m <span class="s1">&#39;add new post&#39;</span><span class="o">&amp;&amp;</span>hg push
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-14"></a>                     @echo <span class="s2">&quot;Done...&quot;</span>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-15"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-16"></a>update:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-17"></a>             ssh root@jasonwu.me <span class="s1">&#39;cd /home/admin/jasonwu.me/&amp;&amp;hg pull&amp;&amp;hg update&#39;</span>
+</pre><p>这个makefile主要实现了生成文档，在本地起一个http服务器来查看生成的文章效果，提交到bitbucket和更新vps上的博客内容等功能，将这些操作完全的自动化，是不是很方便，大家玩的开心。</p>

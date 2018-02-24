@@ -1,0 +1,4 @@
+Sitemap: https://vimer.im/sitemapindex.xml
+
+User-Agent: *
+Host: vimer.im

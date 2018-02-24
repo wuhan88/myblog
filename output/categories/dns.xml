@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Jason Wu's Thoughts and Writings (文章分类：dns)</title><link>https://vimer.im/</link><description></description><atom:link rel="self" type="application/rss+xml" href="https://vimer.im/categories/dns.xml"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:13:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>DNS安全和预防措施</title><link>https://vimer.im/posts/dns-security-preventive-measures/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;DNS系统是所有互联网应用的基础，在网站运维中起着至关重要的作用,本文起一个抛砖引玉的作用，给大家探讨一下，域名解析的原理，域名解析系统常见的的攻击方法和预防措施。&lt;/p&gt;
+&lt;p&gt;在开始之前我先让大家重温近两年两个安全业界比较大的新闻；去年五月份发生的六省大规模断网事件，这件事情起因是据说是两个网游私服因争夺用户恶斗，黑客因为在网站的web服务器上找不到破绽，而将攻击指向了私服的DNS提供商DNSpod,黑客以大流量对DNSpod的服务器进行攻击，DNSpod的服务器在大流量的攻击下不堪重负而宕机，影响超过十万个网站，暴风影音也是这十万个网站中的一员，暴风影音软件由于设计缺陷，在域名解析不可用的情况下，不停的向地方的ISP的DNS服务器发起域名解析请求，由于暴风影音的装机量巨大，这种请求衍变成了对地方ISP的DNS服务器的分布式拒绝服务器攻击（DDOS）,DNS请求的巨大流量如洪水一样将ISP的DNS服务器淹没，最后造成了全国大面积的断网，暴风影音对其软件进行了召回。&lt;/p&gt;
+&lt;p&gt;今年年初的百度被黑事件，这件事情的主要是因黑客冒充百度的工作人员要求域名注册商修改登录账号，注册商在没有审核的情况下就为黑客修改了域名的登录账号，黑客通过账号修改了百度的DNS服务器，造成百度域名的解析出错。&lt;/p&gt;
+&lt;p&gt;DNS系统是所有互联网应用的基础，在网站运维中起着至关重要的作用，下面来看看域名解析的原理：
+￼&lt;/p&gt;
+&lt;img alt="http://pic.yupoo.com/jasonwu1988/ApRyoJWg/66jcP.gif" src="http://pic.yupoo.com/jasonwu1988/ApRyoJWg/66jcP.gif" style="width: 600px;"&gt;
+&lt;p&gt;  1. 访客向本地ISP的DNS服务器发起一个域名解析请求&lt;/p&gt;
+&lt;p&gt;  2. ISP的DNS服务器向授权的DNS服务器发起域名解析请求&lt;/p&gt;
+&lt;p&gt;  3. 授权的DNS服务器将结果返回给ISP的DNS服务器&lt;/p&gt;
+&lt;p&gt;  4. ISP的DNS将结果返回给用户&lt;/p&gt;
+&lt;p&gt;  5. 用户根据返回结果中的IP地址向网站的服务器发起请求&lt;/p&gt;
+&lt;p&gt;正是由于DNS管理系统对于网站非常重要，它也逐渐成为黑客的攻击目标，常见的攻击方式有三种&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;域名劫持&lt;/tt&gt; 百度被黑就属于这种攻击方法，域名被劫持后，不仅网站内容会被改变，甚至可以导致域名所有权也旁落他人。如果是国内的CN域名被劫持，还可以通过和注册服务商或注册管理机构联系，较快地拿回控制权。如果是国际域名被劫持，恰巧又是通过国际注册商注册，那么其复杂的解决流程，再加上非本地化的服务，会使得夺回域名变得异常复杂。&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;域名欺骗(缓存投毒)&lt;/tt&gt; 域名欺骗的方式有多种多样，但其攻击现象就是利用控制DNS缓存服务器，把原本准备访问某网站的用户在不知不觉中带到黑客指向的其他网站上，其实现方式可以通过利用网民ISP端的DNS缓存服务器的漏洞进行攻击或控制，从而改变该ISP内的用户访问域名的响应结果。或者黑客通过利用用户权威域名服务器上的漏洞，如当用户权威域名服务器同时可以被当作缓存服务器使用，黑客可以实现缓存投毒，将错误的域名纪录存入缓存中，从而使所有使用该缓存服务器的用户得到错误的DNS解析结果。域名欺骗可以用来钓鱼，盗取用户的cookie，账号密码信息。&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;DDoS攻击&lt;/tt&gt;  针对DNS服务器的拒绝服务攻击有两种，一种攻击针对DNS服务器软件本身，通常利用BIND软件程序中的漏洞，导致DNS服务器崩溃或拒绝服务;另一种攻击的目标不是DNS服务器，而是利用DNS服务器作为中间的“攻击放大器”，去攻击其他互联网上的主机，导致被攻击主机拒绝服务。
+那么如何去预防这些攻击呢？&lt;/p&gt;
+&lt;p&gt;下面是DNS管理的最佳惯例，做好下面这几项就能够很好防范于未然&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;在不同的网络上运行分离的域名服务器来取得冗余性。&lt;/li&gt;
+&lt;li&gt;将外部和内部域名服务器分开。&lt;/li&gt;
+&lt;li&gt;可能时，限制动态DNS更新。&lt;/li&gt;
+&lt;li&gt;将区域传送仅限制在授权的设备上。&lt;/li&gt;
+&lt;li&gt;利用事务签名对区域传送和区域更新进行数字签名。&lt;/li&gt;
+&lt;li&gt;隐藏运行在服务器上的BIND版本。&lt;/li&gt;
+&lt;li&gt;删除运行在DNS服务器上的不必要服务，如FTP、telnet和HTTP。&lt;/li&gt;
+&lt;li&gt;在网络外围和DNS服务器上使用防火墙服务。将访问限制在那些DNS功能需要的端口/服务上。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结语：文章主要讲述了DNS的解析原理，常见的针对DNS的攻击手法和解决之道，本文只是抛砖引玉，希望能给各位读者对于DNS安全的防护有一定的启发，谢谢！&lt;/p&gt;&lt;/div&gt;</description><category>dns</category><category>security</category><guid>https://vimer.im/posts/dns-security-preventive-measures/</guid><pubDate>Sat, 29 Oct 2011 12:17:59 GMT</pubDate></item></channel></rss>

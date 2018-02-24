@@ -1,0 +1,25 @@
+<p>最近在用lua写一个nginx模块时，遇到一个需要判断一个值是否在一个table里的问题，我有一个类似如下的一个table:</p>
+<pre class="code python"><a name="rest_code_c1e6776e10474f4fb94504861cf87512-1"></a><span class="n">local</span> <span class="n">items</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;pear&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span> <span class="p">}</span>
+</pre><p>我怎样去判断orange是否在这个table里，在python里我可以使用如下的方法：</p>
+<pre class="code python"><a name="rest_code_e6a75492e314492bb71044ddb51a3997-1"></a><span class="k">if</span> <span class="s2">&quot;orange&quot;</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+<a name="rest_code_e6a75492e314492bb71044ddb51a3997-2"></a>    <span class="c1"># do something</span>
+</pre><p>在lua里如何实现类似的方法呢？</p>
+<p><a class="reference external" href="http://www.lua.org/pil/11.5.html">Programming in Lua</a> 中提供了一种方法：</p>
+<pre class="code python"><a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-1"></a><span class="n">function</span> <span class="n">Set</span> <span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-2"></a>  <span class="n">local</span> <span class="nb">set</span> <span class="o">=</span> <span class="p">{}</span>
+<a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-3"></a>  <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ipairs</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="n">do</span> <span class="nb">set</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">true</span> <span class="n">end</span>
+<a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-4"></a>  <span class="k">return</span> <span class="nb">set</span>
+<a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-5"></a><span class="n">end</span>
+</pre><p>你可以使用一个类似set的结构，具体使用的方法如下：</p>
+<pre class="code python"><a name="rest_code_3d95468306924feea3f33767a01ff610-1"></a><span class="n">local</span> <span class="n">items</span> <span class="o">=</span> <span class="n">Set</span> <span class="p">{</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;pear&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span> <span class="p">}</span>
+<a name="rest_code_3d95468306924feea3f33767a01ff610-2"></a>
+<a name="rest_code_3d95468306924feea3f33767a01ff610-3"></a><span class="k">if</span> <span class="n">items</span><span class="p">[</span><span class="s2">&quot;orange&quot;</span><span class="p">]</span> <span class="n">then</span>
+<a name="rest_code_3d95468306924feea3f33767a01ff610-4"></a>  <span class="o">--</span> <span class="n">do</span> <span class="n">something</span>
+<a name="rest_code_3d95468306924feea3f33767a01ff610-5"></a><span class="n">end</span>
+</pre><p>上面的这个方法和下面的这个方法等同：</p>
+<pre class="code python"><a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-1"></a><span class="n">local</span> <span class="n">items</span> <span class="o">=</span> <span class="p">{</span> <span class="n">apple</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">orange</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">pear</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">banana</span><span class="o">=</span><span class="n">true</span> <span class="p">}</span>
+<a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-2"></a><span class="k">if</span> <span class="n">items</span><span class="o">.</span><span class="n">apple</span> <span class="n">then</span>
+<a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-3"></a>    <span class="o">--</span> <span class="n">do</span> <span class="n">something</span>
+<a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-4"></a><span class="n">end</span>
+</pre><p>这个方法足够简单吧，并且效率上要比遍历这个table要高。</p>
+<p>-- eof --</p>

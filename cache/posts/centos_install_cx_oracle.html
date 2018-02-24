@@ -1,0 +1,46 @@
+<p>这个是 <tt class="docutils literal">cx_Oracle</tt> 的说明链接http://cx-oracle.sourceforge.net/README.txt，我是采用源码安装
+安装过程：</p>
+<pre class="code bash"><a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-1"></a>wget  http://prdownloads.sourceforge.net/cx-oracle/cx_Oracle-5.0.3.tar.gz?download
+<a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-2"></a>tar zxvf   cx_Oracle-5.0.3.tar.gz
+<a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-3"></a><span class="nb">cd</span> cx_Oracle-5.0.3
+<a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-4"></a>python setup.py build
+<a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-5"></a>python setup.py install
+</pre><p>下面是检查它是否可以用</p>
+<pre class="code python"><a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">cx_Oracle</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-2"></a><span class="err">接着出现了两个错误，错误信息如下：</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-3"></a><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">cx_Oracle</span><span class="o">-</span><span class="mf">5.0</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">py2</span><span class="o">.</span><span class="mi">6</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">egg</span><span class="o">/</span><span class="n">cx_Oracle</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">3</span><span class="p">:</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-4"></a><span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Module</span> <span class="n">cx_Oracle</span> <span class="n">was</span> <span class="n">already</span> <span class="n">imported</span> <span class="kn">from</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-5"></a><span class="o">/</span><span class="n">cx_Oracle</span><span class="o">-</span><span class="mf">5.0</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">py2</span><span class="o">.</span><span class="mi">6</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">egg</span><span class="o">/</span><span class="n">cx_Oracle</span><span class="o">.</span><span class="n">pyc</span><span class="p">,</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-6"></a><span class="n">but</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">cx_Oracle</span><span class="o">-</span><span class="mf">5.0</span><span class="o">.</span><span class="mi">3</span> <span class="ow">is</span> <span class="n">being</span> <span class="n">added</span> <span class="n">to</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-7"></a><span class="ne">ImportError</span><span class="p">:</span> <span class="n">libclntsh</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mf">10.1</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="nb">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</pre><p>下面来说说这两个错误的解决方法，
+第一个问题，提示说/usr/local/cx_Oracle-5.0.3已经加入到python的 <tt class="docutils literal">sys.path</tt> 里面了
+那么我们就在 <tt class="docutils literal">sys.path</tt> 中去掉这个路径：
+具体方法</p>
+<pre class="code python"><a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-3"></a><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages/setuptools-0.6c11-py2.6.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-4"></a><span class="s1">&#39;/usr/local/lib/python2.6/site-packages/fudge-0.9.4-py2.6.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-5"></a> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages/python_memcached-1.45-py2.6.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-6"></a> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages/MySQL_python-1.2.3c1-py2.6-linux-x86_64.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-7"></a><span class="s1">&#39;/usr/local/lib/python2.6/site-packages/flup-1.0.3.dev_20100525-py2.6.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-8"></a><span class="s1">&#39;/usr/local/lib/python2.6/site-packages/regex-0.1.20100706.1-py2.6-linux-x86_64.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-9"></a> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages/cx_Oracle-5.0.3-py2.6-linux-x86_64.egg&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-10"></a> <span class="s1">&#39;/usr/local/lib/python26.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python2.6&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python2.6/plat-linux2&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-11"></a> <span class="s1">&#39;/usr/local/lib/python2.6/lib-tk&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python2.6/lib-old&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-12"></a><span class="s1">&#39;/usr/local/lib/python2.6/lib-dynload&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages&#39;</span><span class="p">,</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-13"></a> <span class="s1">&#39;/usr/local/lib/python2.6/site-packages/PIL&#39;</span><span class="p">,</span> <span class="s1">&#39;/usr/local/cx_Oracle-5.0.3&#39;</span><span class="p">]</span>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-14"></a>
+<a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-15"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/usr/local/cx_Oracle-5.0.3&#39;</span><span class="p">)</span>
+</pre><p>第一个问题解决，接着第二个问题，这个网上有解决方案，下面说说解决方法：
+这个的原因是 <tt class="docutils literal">Oracle</tt> 的路径没有设定</p>
+<pre class="code bash"><a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-1"></a>locate libclntsh.so.10.1
+<a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-2"></a>/opt/oracle/product/10.2/db_1/lib/libclntsh.so.10.1
+<a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-3"></a>/opt/oracle/product/10.2/db_1/lib32/libclntsh.so.10.1
+<a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-4"></a><span class="nb">echo</span> /opt/oracle/product/10.2/db_1/lib/ &gt;&gt; /etc/ld.so.conf
+<a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-5"></a>ldconfig
+</pre><p>就这样第二个问题解决
+再试一下：</p>
+<pre class="code python"><a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">cx_Oracle</span>
+<a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-2"></a><span class="o">&gt;&gt;&gt;</span>
+</pre>

@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jason Wu's Thoughts and Writings (JasonWu 发布)</title><link>https://vimer.im/</link><description></description><atom:link type="application/rss+xml" href="https://vimer.im/authors/jasonwu.xml" rel="self"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:14:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>如何判断一个值在lua的table里</title><link>https://vimer.im/posts/search_for_an_item_in_a_lua_list/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;最近在用lua写一个nginx模块时，遇到一个需要判断一个值是否在一个table里的问题，我有一个类似如下的一个table:&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_c1e6776e10474f4fb94504861cf87512-1"&gt;&lt;/a&gt;&lt;span class="n"&gt;local&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="s2"&gt;"apple"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"orange"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"pear"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"banana"&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;我怎样去判断orange是否在这个table里，在python里我可以使用如下的方法：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_e6a75492e314492bb71044ddb51a3997-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;"orange"&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_e6a75492e314492bb71044ddb51a3997-2"&gt;&lt;/a&gt;    &lt;span class="c1"&gt;# do something&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;在lua里如何实现类似的方法呢？&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://www.lua.org/pil/11.5.html"&gt;Programming in Lua&lt;/a&gt; 中提供了一种方法：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-1"&gt;&lt;/a&gt;&lt;span class="n"&gt;function&lt;/span&gt; &lt;span class="n"&gt;Set&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-2"&gt;&lt;/a&gt;  &lt;span class="n"&gt;local&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+&lt;a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-3"&gt;&lt;/a&gt;  &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ipairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;do&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;true&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;
+&lt;a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-4"&gt;&lt;/a&gt;  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;
+&lt;a name="rest_code_03ea325f412b49e0bbd2d6bb269f6bfb-5"&gt;&lt;/a&gt;&lt;span class="n"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;你可以使用一个类似set的结构，具体使用的方法如下：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_3d95468306924feea3f33767a01ff610-1"&gt;&lt;/a&gt;&lt;span class="n"&gt;local&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Set&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="s2"&gt;"apple"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"orange"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"pear"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"banana"&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;a name="rest_code_3d95468306924feea3f33767a01ff610-2"&gt;&lt;/a&gt;
+&lt;a name="rest_code_3d95468306924feea3f33767a01ff610-3"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"orange"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="n"&gt;then&lt;/span&gt;
+&lt;a name="rest_code_3d95468306924feea3f33767a01ff610-4"&gt;&lt;/a&gt;  &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;do&lt;/span&gt; &lt;span class="n"&gt;something&lt;/span&gt;
+&lt;a name="rest_code_3d95468306924feea3f33767a01ff610-5"&gt;&lt;/a&gt;&lt;span class="n"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;上面的这个方法和下面的这个方法等同：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-1"&gt;&lt;/a&gt;&lt;span class="n"&gt;local&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;apple&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;orange&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pear&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;banana&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;true&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-2"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;apple&lt;/span&gt; &lt;span class="n"&gt;then&lt;/span&gt;
+&lt;a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-3"&gt;&lt;/a&gt;    &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;do&lt;/span&gt; &lt;span class="n"&gt;something&lt;/span&gt;
+&lt;a name="rest_code_de0ef0796e6b4b12b90ef0f4a771e610-4"&gt;&lt;/a&gt;&lt;span class="n"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;这个方法足够简单吧，并且效率上要比遍历这个table要高。&lt;/p&gt;
+&lt;p&gt;-- eof --&lt;/p&gt;&lt;/div&gt;</description><category>lua</category><guid>https://vimer.im/posts/search_for_an_item_in_a_lua_list/</guid><pubDate>Thu, 23 May 2013 12:17:59 GMT</pubDate></item><item><title>博客迁移到tinkerer</title><link>https://vimer.im/posts/begin_tinkerer/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;在11年时，将我的博客从wordpress+mysql换成了django+sqlite，具体可见 &lt;a class="reference external" href="http://jasonwu.me/2011/05/29/The-blog-from-wordpress-migrate-django.html"&gt;将博客从wordpress迁移到django&lt;/a&gt; 这篇文章， 在折腾精神的感召下，在12年底我将博客程序又换掉了，这次换成了一个基于 &lt;a class="reference external" href="http://sphinx.pocoo.org/"&gt;sphinx&lt;/a&gt; 静态博客生成器 &lt;a class="reference external" href="http://tinkerer.me/pages/documentation.html"&gt;tinkerer&lt;/a&gt; ， &lt;tt class="docutils literal"&gt;tinkerer&lt;/tt&gt; 使用 &lt;a class="reference external" href="http://docutils.sourceforge.net/rst.html"&gt;reStructuredText&lt;/a&gt;  作为标记语言，可以生成文章的分类，tag，支持评论和代码高亮，文章评论使用 &lt;tt class="docutils literal"&gt;disqus&lt;/tt&gt; , 高亮代码使用 &lt;tt class="docutils literal"&gt;Pygments&lt;/tt&gt; 。&lt;/p&gt;
+&lt;p&gt;说说为什么使用 &lt;tt class="docutils literal"&gt;tinkerer&lt;/tt&gt; ，从打算把博客弄成静态站点开始我尝试了很多项目，如 &lt;tt class="docutils literal"&gt;octpress&lt;/tt&gt; 、 &lt;tt class="docutils literal"&gt;jekyll&lt;/tt&gt; 、 &lt;tt class="docutils literal"&gt;pelican&lt;/tt&gt; ，一次偶然的机会在 &lt;tt class="docutils literal"&gt;bitbucket&lt;/tt&gt; 上发现了 &lt;tt class="docutils literal"&gt;tinkerer&lt;/tt&gt; ，试用后感觉比较顺手，并且可以使用sphinx的扩展，我比较熟悉 &lt;tt class="docutils literal"&gt;sphinx&lt;/tt&gt; 和 &lt;tt class="docutils literal"&gt;reStructuredText&lt;/tt&gt; 的使用，平时就用这两个东西写文档，因此选择了基于 &lt;tt class="docutils literal"&gt;sphinx&lt;/tt&gt; 的 &lt;tt class="docutils literal"&gt;tinkerer&lt;/tt&gt; 。我最开始使用的是0.4 beta版还存在一些bug，然后我自己做了一些修改pull给作者，作者很快就接受了我的pull request，并表示感谢，现在1.0版本已经发布，基本上没有比较明显的bug了，只是有一些细节可能不是那么完美，还有一个就是主题很少，目前默认的几款主题，都不是很美观，目前我在移植一款主题。&lt;/p&gt;
+&lt;p&gt;tinkerer的一些使用经验:&lt;/p&gt;
+&lt;p&gt;＊ 自定义博客的侧边栏&lt;/p&gt;
+&lt;p&gt;这里以创建友情链接的plugin作为例子，复制boilerplate主题目录下recent.html为一个新的文件，如friendslinks.html，然后改成如下这样就可以了:&lt;/p&gt;
+&lt;pre class="code html"&gt;&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-1"&gt;&lt;/a&gt;{#-
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-2"&gt;&lt;/a&gt;    boilerplate/friendslinks.html
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-3"&gt;&lt;/a&gt;    ~~~~~~~~~~~~~~~~~~~~~
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-4"&gt;&lt;/a&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-5"&gt;&lt;/a&gt;    Sidebar list of all tags.
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-6"&gt;&lt;/a&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-7"&gt;&lt;/a&gt;    :copyright: Copyright 2012 by Iñigo Serna
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-8"&gt;&lt;/a&gt;    :license: FreeBSD, see LICENSE file
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-9"&gt;&lt;/a&gt;-#}
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-10"&gt;&lt;/a&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-11"&gt;&lt;/a&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"widget"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-12"&gt;&lt;/a&gt;    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;Friends links&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;h1&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-13"&gt;&lt;/a&gt;    &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;ul&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-14"&gt;&lt;/a&gt;        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"http://www.qdyongai.cn/?from=jason"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;龙哥-网站设计&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-15"&gt;&lt;/a&gt;        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"http://www.zipeng.info/?from=jason"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;子鹏-kun的记事本&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-16"&gt;&lt;/a&gt;        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"http://www.aaronw.me/?from=jason"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;王炜-我的技术生活&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-17"&gt;&lt;/a&gt;        &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"http://cuikai-wh.com/?from=jason"&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;小轰-时光立方&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;a&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;li&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-18"&gt;&lt;/a&gt;    &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;ul&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-19"&gt;&lt;/a&gt;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;这里要注意的是默认的modern5主题是继承于boilerplate这个主题，因此只要修改boilerplate这个主题就可以了&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;然后在conf.py中加入这个文件的配置&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_59ceab4634c0461680e69237fe913ecf-1"&gt;&lt;/a&gt;&lt;span class="c1"&gt;# Add templates to be rendered in sidebar here&lt;/span&gt;
+&lt;a name="rest_code_59ceab4634c0461680e69237fe913ecf-2"&gt;&lt;/a&gt;&lt;span class="n"&gt;html_sidebars&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_59ceab4634c0461680e69237fe913ecf-3"&gt;&lt;/a&gt;    &lt;span class="s2"&gt;"**"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"searchbox.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"categories.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"recent.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"friendslinks.html"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"weibo.html"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;a name="rest_code_59ceab4634c0461680e69237fe913ecf-4"&gt;&lt;/a&gt;    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;ul class="simple"&gt;
+&lt;li&gt;创建一个makefile，使用过 &lt;tt class="docutils literal"&gt;sphinx&lt;/tt&gt; 的人应该都知道 &lt;tt class="docutils literal"&gt;sphinx&lt;/tt&gt; 会生成一个 makefile，这样可以直接使用make html就可以生成文档了，tinker没有提供，那么我们可以自己写一个，让我么操作的更加自动化，如下是我 &lt;tt class="docutils literal"&gt;Makefile&lt;/tt&gt; 示例，大家可以参照下：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-1"&gt;&lt;/a&gt;all: build commit update
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-2"&gt;&lt;/a&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-3"&gt;&lt;/a&gt;clean:
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-4"&gt;&lt;/a&gt;             rm -rf blog/html/
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-5"&gt;&lt;/a&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-6"&gt;&lt;/a&gt;build:
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-7"&gt;&lt;/a&gt;             tinker -b
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-8"&gt;&lt;/a&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-9"&gt;&lt;/a&gt;serve:
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-10"&gt;&lt;/a&gt;             &lt;span class="nb"&gt;cd&lt;/span&gt; blog/html/ &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; python -m SimpleHTTPServer
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-11"&gt;&lt;/a&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-12"&gt;&lt;/a&gt;commit:
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-13"&gt;&lt;/a&gt;             hg commit ./ -m &lt;span class="s1"&gt;'add new post'&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;hg push
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-14"&gt;&lt;/a&gt;                     @echo &lt;span class="s2"&gt;"Done..."&lt;/span&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-15"&gt;&lt;/a&gt;
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-16"&gt;&lt;/a&gt;update:
+&lt;a name="rest_code_d76f05210fcb45b08b3804125c50f578-17"&gt;&lt;/a&gt;             ssh root@jasonwu.me &lt;span class="s1"&gt;'cd /home/admin/jasonwu.me/&amp;amp;&amp;amp;hg pull&amp;amp;&amp;amp;hg update'&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;这个makefile主要实现了生成文档，在本地起一个http服务器来查看生成的文章效果，提交到bitbucket和更新vps上的博客内容等功能，将这些操作完全的自动化，是不是很方便，大家玩的开心。&lt;/p&gt;&lt;/div&gt;</description><category>blog</category><category>sphinx</category><category>staic site</category><category>tinkerer</category><guid>https://vimer.im/posts/begin_tinkerer/</guid><pubDate>Tue, 29 Jan 2013 12:17:59 GMT</pubDate></item><item><title>使用NGINX+UWSGI来部署Django</title><link>https://vimer.im/posts/use_nginx_uwsgi_deploy_django/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;关于UWSGI的介绍不多说了，想了解的可以自己去搜，uwsgi性能还蛮不错，我们之前使用的fastcgi方式来跑django，前端用F5做负载均衡，用户数增加后服务器的load很高，但换uwsgi服务器的load下降不少，废话不多说，进入正题。
+编译安装nginx，用的nginx-0.8.54，目前最新的stable版本&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_738db320c0ae413395675637fa632467-1"&gt;&lt;/a&gt;wget http://nginx.org/download/nginx-0.8.54.tar.gz
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-2"&gt;&lt;/a&gt;tar zxvf  nginx-0.8.54.tar.gz
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-3"&gt;&lt;/a&gt;./configure --user&lt;span class="o"&gt;=&lt;/span&gt;nobody
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-4"&gt;&lt;/a&gt;  --group&lt;span class="o"&gt;=&lt;/span&gt;nobody
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-5"&gt;&lt;/a&gt;  --prefix&lt;span class="o"&gt;=&lt;/span&gt;/usr/local/nginx
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-6"&gt;&lt;/a&gt;  --with-http_ssl_module
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-7"&gt;&lt;/a&gt;  --http-log-path&lt;span class="o"&gt;=&lt;/span&gt;/var/log/nginx/access.log
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-8"&gt;&lt;/a&gt;  --with-http_gzip_static_module
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-9"&gt;&lt;/a&gt;make&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;make install
+&lt;/pre&gt;&lt;p&gt;下面来安装uwsgi&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-1"&gt;&lt;/a&gt;wget http://projects.unbit.it/downloads/uwsgi-0.9.6.5.tar.gz
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-2"&gt;&lt;/a&gt;tar zvxf uwsgi-0.9.6.5.tar.gz
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-3"&gt;&lt;/a&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; uwsgi-0.9.6.5
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-4"&gt;&lt;/a&gt;make -f Makefile.Py26
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-5"&gt;&lt;/a&gt;cp uwsgi /usr/sbin/uwsgi    &lt;span class="c1"&gt;#将uwsgi放到PATH下&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面来说说怎么配置：
+新建一个uwsgi.xml的文件放到django的目录下&lt;/p&gt;
+&lt;pre class="code xml"&gt;&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-1"&gt;&lt;/a&gt;#cat uwsgi.xml
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-2"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;uwsgi&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-3"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-4"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;socket&amp;gt;&lt;/span&gt;0.0.0.0:8000&lt;span class="nt"&gt;&amp;lt;/socket&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-5"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-6"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;listen&amp;gt;&lt;/span&gt;204800&lt;span class="nt"&gt;&amp;lt;/listen&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-7"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-8"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 开启32个线程 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-9"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;processes&amp;gt;&lt;/span&gt;32&lt;span class="nt"&gt;&amp;lt;/processes&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-10"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-11"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;max-requests&amp;gt;&lt;/span&gt;2048000&lt;span class="nt"&gt;&amp;lt;/max-requests&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-12"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-13"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;buffer-size&amp;gt;&lt;/span&gt;8192&lt;span class="nt"&gt;&amp;lt;/buffer-size&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-14"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-15"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 你的配置文件 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-16"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;django_wsgi&lt;span class="nt"&gt;&amp;lt;/module&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-17"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-18"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;profiler&amp;gt;&lt;/span&gt;true&lt;span class="nt"&gt;&amp;lt;/profiler&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-19"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-20"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;enable-threads&amp;gt;&lt;/span&gt;true&lt;span class="nt"&gt;&amp;lt;/enable-threads&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-21"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-22"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 限制内存空间256M --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-23"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;limit-as&amp;gt;&lt;/span&gt;256&lt;span class="nt"&gt;&amp;lt;/limit-as&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-24"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-25"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 使用async模式来运行，这里要注意一下，如果你的app的是no-async-friendly 那就不要用这个模式 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-26"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;async&amp;gt;&lt;/span&gt;10&lt;span class="nt"&gt;&amp;lt;/async&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-27"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-28"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;disable-logging/&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-29"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-30"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;daemonize&amp;gt;&lt;/span&gt;/home/app01/uwsgi.log&lt;span class="nt"&gt;&amp;lt;/daemonize&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-31"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-32"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;/uwsgi&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;pre class="code python"&gt;&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-1"&gt;&lt;/a&gt;&lt;span class="c1"&gt;#cat django_wsgi.py&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-2"&gt;&lt;/a&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-3"&gt;&lt;/a&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;django.core.handlers.wsgi&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-4"&gt;&lt;/a&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'DJANGO_SETTINGS_MODULE'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'your settings'&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-5"&gt;&lt;/a&gt;&lt;span class="n"&gt;application&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;core&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;handlers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIHandler&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面是nginx的配置：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-1"&gt;&lt;/a&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-2"&gt;&lt;/a&gt;        listen   &lt;span class="m"&gt;80&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-3"&gt;&lt;/a&gt;        server_name jasonwu.me&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-4"&gt;&lt;/a&gt;        access_log /var/log/jasownu.me/access_log&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-5"&gt;&lt;/a&gt;        location / &lt;span class="o"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-6"&gt;&lt;/a&gt;            root   /home/app01/&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-7"&gt;&lt;/a&gt;            uwsgi_pass &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1:8000&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-8"&gt;&lt;/a&gt;            include        uwsgi_params&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-9"&gt;&lt;/a&gt;      &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-10"&gt;&lt;/a&gt;  &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;启动服务：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_61b576c2543246e9a4a9301ce0570246-1"&gt;&lt;/a&gt;/usr/bin/uwsgi -x /home/app01/uwsgi.xml
+&lt;a name="rest_code_61b576c2543246e9a4a9301ce0570246-2"&gt;&lt;/a&gt;/usr/local/nginx/sbin/nginx
+&lt;/pre&gt;&lt;p&gt;这样部署完成了&lt;/p&gt;
+&lt;p&gt;下面来说说遇到的一个问题，不知道大家有没有遇到，
+在我们启动uwsgi后在uwsgi的日志中会出现如下的信息:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+– unavailable modifier requested: 1 –
+– unavailable modifier requested: 1 –
+&lt;/pre&gt;
+&lt;p&gt;表现的现象就是启动一段时间没法访问app，在查看uwsgi的源代码中我们找到打印这部份日志的段落，正常情况下应该返回的-1，目前还在查找这个出现这个错误的原因。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参考文档:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;uwsgi的 &lt;a class="reference external" href="http://projects.unbit.it/uwsgi/wiki/TitleIndex"&gt;官方wiki&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.nightmare.com/medusa/programming.html"&gt;Programming in Python with Medusa and the Async Sockets Library&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>django</category><category>nginx</category><category>uwsgi</category><guid>https://vimer.im/posts/use_nginx_uwsgi_deploy_django/</guid><pubDate>Wed, 12 Dec 2012 12:17:59 GMT</pubDate></item><item><title>unp读书笔记（第六章I/O模型）</title><link>https://vimer.im/posts/the_unp_reading_notes_io_model/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;在看了unp后才发现自己之前的认识一直都是错误的，把阻塞I/O，非阻塞I/O，同步和异步混为一谈，之前一直觉得异步就是非阻塞io，同步就是阻塞io，主要搞清楚了，五种I/O模型的实现，以及epoll并不是aio，这两个并不是一个东西。&lt;/p&gt;
+&lt;p&gt;实际上unix有五种I/O模型：&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;阻塞I/O&lt;/li&gt;
+&lt;li&gt;非阻塞I/O&lt;/li&gt;
+&lt;li&gt;I/O复用(select和poll)&lt;/li&gt;
+&lt;li&gt;信号驱动I/O（SIGIO)&lt;/li&gt;
+&lt;li&gt;异步I/O&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一个输入操作一般有两个不同的阶段：
+1. 等待数据准备好
+2. 从内核到进程拷贝数据
+对于一个套接口上的输入操作，第一步一般是等待数据到达网络，当分组到达时，它被拷贝到内核中的某个缓冲区，第二步是将数据从内核缓冲区拷贝到应用缓冲区。&lt;/p&gt;
+&lt;div class="section" id="i-o"&gt;
+&lt;h2&gt;1.阻塞I/O模型&lt;/h2&gt;
+&lt;p&gt;最流行的I/O模型是阻塞I/O模型，缺省时，所有套接口都是阻塞的。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" src="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;2. 非阻塞I/O模型&lt;/h2&gt;
+&lt;p&gt;前三次调用recvfrom时仍无数据返回，因此内核立即返回一个EWOULDBLOCK错误。第四次调用recvfrom时，数据已经准备好，被拷贝到应用缓冲区，recvfrom返回成功指示，接着就是我们处理数据。当一个应用进程像这样对一个非阻塞描述字循环调用recvfrom时，我们称此过程为轮询(polling)。应用进程连续不断地查询内核，看看某操作是否准备好，这对cpu时间是极大的浪费，但这种模型只是偶尔才遇到，一般是在只专门提供某种功能的系统中才有。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" src="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;3. I/O复用模型&lt;/h2&gt;
+&lt;p&gt;有了I/O复用，我们就可以调用select或poll，在这两个系统调用中的某一个上阻塞，而不是阻塞于真正的I/O系统调用。如图6.3，我们阻塞于select调用，等待数据报套接口可读。当select返回套接口可读条件时，我们调用recvfrom将数据报拷贝到应用缓冲区中。使用select的好处在于我们可以等待多个描述字准备好。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" src="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h2&gt;4. 信号驱动I/O模型&lt;/h2&gt;
+&lt;p&gt;我们也可以用信号，让内核在描述字准备好时，用信号SIGIO通知我们，我们将此方法称为信号驱动I/O，如图6.4
+首先我们允许套接口进行信号驱动IO，并通过系统调用sigaction安装一个信号处理程序。此系统调用立即返回，进程继续工作，它是非阻塞的。当数据报准备好被读时，就为该进程生成一个SIGIO信号。我们随即可以在信号处理程序中调用recvfrom来读数据报，并通知主循环数据已准备好被处理。也可以通知主循环，让它来读数据报。无论我们如何处理SIGIO信号，这种模型的好处是当等待数据报到达时，可以不阻塞。主循环可以继续执行，只是等待信号处理程序的通知,或者数据已准备好处理，或者数据报已准备好被读。&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" src="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;5. 异步I/O模型&lt;/h2&gt;
+&lt;p&gt;异步IO是POSIX实时扩展，我们让内核启动操作，并在整个操作完成后(包括将数据从内核拷贝到我们自己的缓冲区)通知我们。这种模型没有广泛使用。这种模型与前一节介绍的信号驱动模型的主要区别在于：信号驱动I/O是由内核通知我们何时可以启动一个I/O操作，而异步I/O模型是由内核通知我们I/O操作何时完成。我们调用函数aio_read(POSIX异步I/O函数以aio_或者lio_开头)，给内核传递描述字，缓冲区指针，缓冲区大小(与read相同的三个参数)，文件偏移(与lseek类似)，并告诉内核当前整个操作完成是如何通知我们。此系统调用立即返回，我们的进程不阻塞于等待I/O操作的完成。在此例子中，我们假设要求内核在操作完成时生成一个信号，此信号直到数据已拷贝到应用缓冲区才生成，这一点是与信号驱动I/O模型不同的。&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" src="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h2&gt;6. 五种不同I/O模型的比较&lt;/h2&gt;
+&lt;img alt="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" src="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="i-oi-o"&gt;
+&lt;h2&gt;7. 同步I/O与异步I/O&lt;/h2&gt;
+&lt;p&gt;POSIX定义这两个术语如下：
+同步I/O操作引起请求进程阻塞，直到I/O操作完成。
+异步I/O操作不引起请求进程阻塞。
+根据上述定义，我们的前四个模型--阻塞I/O模型，非阻塞I/O模型，I/O复用模型和信号驱动I/O模型都是同步I/O模型，因为真正的I/O操作(recvfrom)阻塞进程，只有异步I/O模型与异步I/O的定义相匹配。&lt;/p&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>I/O</category><category>unp</category><guid>https://vimer.im/posts/the_unp_reading_notes_io_model/</guid><pubDate>Tue, 04 Dec 2012 12:17:59 GMT</pubDate></item><item><title>Python : 什么是*args和**kwargs？</title><link>https://vimer.im/posts/args_and_kwargs_in_python/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;pre class="code python"&gt;&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-2"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'args = '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-3"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'kwargs = '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-4"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'---------------------------------------'&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-6"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-7"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-8"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-9"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'a'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'2'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;输出结果如下：&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+| args = (1, 2, 3, 4)
+| kwargs = {}
+| ---------------------------------------
+| args = ()
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = (1, 2, 3, 4)
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = ('a', 1, None)
+| kwargs = {'a': 1, 'c': 3, 'b': '2'}
+| ---------------------------------------
+&lt;/pre&gt;
+&lt;p&gt;可以看到，这两个是python中的可变参数。 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 表示任何多个无名参数，它是一个tuple； &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 表示关键字参数，它是一个dict。并且同时使用 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 和 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 时，必须 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 参数列要在 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 前，像foo(a=1, b='2', c=3, a', 1, None, )这样调用的话，会提示语法错误“SyntaxError: non-keyword arg after keyword arg”。&lt;/p&gt;
+&lt;p&gt;呵呵，知道 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 和 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 是什么了吧。还有一个很漂亮的用法，就是创建字典：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;kw_dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-2"&gt;&lt;/a&gt;    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-3"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;kw_dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'a'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;其实python中就带有dict类，使用dict(a=1,b=2,c=3)即可创建一个字典了。&lt;/p&gt;
+&lt;p&gt;另:连接两个字典的方法:&lt;/p&gt;
+&lt;p&gt;第一种:&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; a={'a':'a','b':'b'}
+&amp;gt;&amp;gt;&amp;gt; m=dict(c='c',**a)
+&amp;gt;&amp;gt;&amp;gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;第二种:&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; a={'a':'a','b':'b'}
+&amp;gt;&amp;gt;&amp;gt; m={'c':'c'}
+&amp;gt;&amp;gt;&amp;gt; m.update(a)
+&amp;gt;&amp;gt;&amp;gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/args_and_kwargs_in_python/</guid><pubDate>Mon, 03 Dec 2012 12:17:59 GMT</pubDate></item><item><title>python的lambda函数介绍</title><link>https://vimer.im/posts/introduce_to_python_lambda/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;今天在论坛上看到有人问的一个关于如何从一个python的字典中取到value中最大的那个key值，里面用到了 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 函数，今天那就大致介绍下 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 是个什么东东。
+python支持创建一种匿名的函数（一种没绑定名字的函数），这种函数叫做lambda，这个和fp(函数编程)里面的lambda的含义并不是完全一致，下面这段代码将展示 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 和普通函数之间的区别&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; def f (x): return x**2
+...
+&amp;gt;&amp;gt;&amp;gt; print f(8)
+64
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; g = lambda x: x**2
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; print g(8)
+64
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;g()是一个 lambda 函数，完成同上面普通函数相同的事情。注意这里的简短的语法：在参数列表周围没有括号，而且忽略了 return 关键字 (隐含存在，因为整个函数只有一行)。而且，该函数没有函数名称，但是可以将它赋值给一个变量进行调用。
+使用 lambda 函数时甚至不需要将它赋值给一个变量。这可能不是世上最有用的东西，它只是展示了 lambda 函数只是一个内联函数。&lt;/p&gt;
+&lt;p&gt;总的来说，lambda 函数可以接收任意多个参数 (包括可选参数) 并且返回单个表达式的值。lambda 函数不能包含命令，包含的表达式不能超过一个。不要试图向 lambda 函数中塞入太多的东西；如果你需要更复杂的东西，应该定义一个普通函数，然后想让它多长就多长。
+这里只是大致介绍一下，想深入研究的可以看文章后面附的文档，这里回到开头的问题，如果返回一个字典中最大的value值的key，下面为代码：&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; dict = {'a':1,'b':2,'c':3}
+&amp;gt;&amp;gt;&amp;gt; max(dict.iterkeys(),key=lambda k:dict[k])
+'c'
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;下面来大致解释这段代码，先定义了一个列表，通过使用key参数改变了max比较列表元素的方法，最终达到了取得value值最大的key的目的。&lt;/p&gt;
+&lt;p&gt;接下来讲一下，python字典的 &lt;tt class="docutils literal"&gt;iterkeys&lt;/tt&gt; &lt;tt class="docutils literal"&gt;iteritems&lt;/tt&gt; &lt;tt class="docutils literal"&gt;itervalues&lt;/tt&gt; 这三个方法，字典对象也提供keys，items，values这三个方法，那前面的三种方法和后面的三种方法有什么不一样呢，我们大致运行一下就可以知道了，前面的三个方法返回迭代器对象，而后三种方法返回的为列表对象，使用前三种方法更高效一些，后三种方法对内存占用比较大，在python 3.0中取消了iterkeys，iteritems，itervalues这三个方法，将keys，items，values这三个方法功能改为原来iter*的功能。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参考文档:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Python: &lt;a class="reference external" href="http://www.secnetix.de/olli/Python/lambda_functions.hawk"&gt;Lambda Functions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python: &lt;a class="reference external" href="http://docs.python.org/library/functions.html"&gt;Built-in Functions&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/introduce_to_python_lambda/</guid><pubDate>Tue, 23 Oct 2012 12:17:59 GMT</pubDate></item><item><title>CENT OS安装cx_Oracle遇到的问题及解决方法</title><link>https://vimer.im/posts/centos_install_cx_oracle/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;这个是 &lt;tt class="docutils literal"&gt;cx_Oracle&lt;/tt&gt; 的说明链接http://cx-oracle.sourceforge.net/README.txt，我是采用源码安装
+安装过程：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-1"&gt;&lt;/a&gt;wget  http://prdownloads.sourceforge.net/cx-oracle/cx_Oracle-5.0.3.tar.gz?download
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-2"&gt;&lt;/a&gt;tar zxvf   cx_Oracle-5.0.3.tar.gz
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-3"&gt;&lt;/a&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; cx_Oracle-5.0.3
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-4"&gt;&lt;/a&gt;python setup.py build
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-5"&gt;&lt;/a&gt;python setup.py install
+&lt;/pre&gt;&lt;p&gt;下面是检查它是否可以用&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;cx_Oracle&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-2"&gt;&lt;/a&gt;&lt;span class="err"&gt;接着出现了两个错误，错误信息如下：&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-3"&gt;&lt;/a&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;python2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;py2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;egg&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-4"&gt;&lt;/a&gt;&lt;span class="ne"&gt;UserWarning&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Module&lt;/span&gt; &lt;span class="n"&gt;cx_Oracle&lt;/span&gt; &lt;span class="n"&gt;was&lt;/span&gt; &lt;span class="n"&gt;already&lt;/span&gt; &lt;span class="n"&gt;imported&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;python2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;packages&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-5"&gt;&lt;/a&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;py2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;egg&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pyc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-6"&gt;&lt;/a&gt;&lt;span class="n"&gt;but&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="n"&gt;being&lt;/span&gt; &lt;span class="n"&gt;added&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-7"&gt;&lt;/a&gt;&lt;span class="ne"&gt;ImportError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;libclntsh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;10.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cannot&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;No&lt;/span&gt; &lt;span class="n"&gt;such&lt;/span&gt; &lt;span class="nb"&gt;file&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;directory&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面来说说这两个错误的解决方法，
+第一个问题，提示说/usr/local/cx_Oracle-5.0.3已经加入到python的 &lt;tt class="docutils literal"&gt;sys.path&lt;/tt&gt; 里面了
+那么我们就在 &lt;tt class="docutils literal"&gt;sys.path&lt;/tt&gt; 中去掉这个路径：
+具体方法&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-2"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-3"&gt;&lt;/a&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;''&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/setuptools-0.6c11-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-4"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/fudge-0.9.4-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-5"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/python_memcached-1.45-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-6"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/MySQL_python-1.2.3c1-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-7"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/flup-1.0.3.dev_20100525-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-8"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/regex-0.1.20100706.1-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-9"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/cx_Oracle-5.0.3-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-10"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python26.zip'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/plat-linux2'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-11"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-tk'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-old'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-12"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-dynload'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-13"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/PIL'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/cx_Oracle-5.0.3'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-14"&gt;&lt;/a&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-15"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remove&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'/usr/local/cx_Oracle-5.0.3'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;第一个问题解决，接着第二个问题，这个网上有解决方案，下面说说解决方法：
+这个的原因是 &lt;tt class="docutils literal"&gt;Oracle&lt;/tt&gt; 的路径没有设定&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-1"&gt;&lt;/a&gt;locate libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-2"&gt;&lt;/a&gt;/opt/oracle/product/10.2/db_1/lib/libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-3"&gt;&lt;/a&gt;/opt/oracle/product/10.2/db_1/lib32/libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-4"&gt;&lt;/a&gt;&lt;span class="nb"&gt;echo&lt;/span&gt; /opt/oracle/product/10.2/db_1/lib/ &amp;gt;&amp;gt; /etc/ld.so.conf
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-5"&gt;&lt;/a&gt;ldconfig
+&lt;/pre&gt;&lt;p&gt;就这样第二个问题解决
+再试一下：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;cx_Oracle&lt;/span&gt;
+&lt;a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-2"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>cx_oracle</category><category>python</category><guid>https://vimer.im/posts/centos_install_cx_oracle/</guid><pubDate>Tue, 09 Oct 2012 12:17:59 GMT</pubDate></item><item><title>LVS的三种模式区别详解</title><link>https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;div class="contents topic" id="table-of-contents"&gt;
+&lt;p class="topic-title first"&gt;内容索引 Table of Contents&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#dr-direct-routing" id="id12"&gt;DR模式：(Direct Routing)直接路由模式&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#dr" id="id13"&gt;DR模式的网络拓扑：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id1" id="id14"&gt;DR模式的工作过程：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id2" id="id15"&gt;DR模式的几个细节：&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#lvsreal-server" id="id16"&gt;LVS和Real-server必须在相同的网段&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#lvs" id="id17"&gt;LVS不需要开启路由转发：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#arp" id="id18"&gt;ARP问题：&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#ip-tunneling" id="id19"&gt;IP Tunneling模式：&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id3" id="id20"&gt;IP Tunneling的拓扑图&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id4" id="id21"&gt;IP Tunneling的工作过程&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id5" id="id22"&gt;IP Tunneling的几个细节问题&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#ip" id="id23"&gt;IP封包的过程：(如图)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id6" id="id24"&gt;LVS和Real-server不需要在一个网段：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#real-server" id="id25"&gt;Real-server的系统设置：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id7" id="id26"&gt;ARP问题：&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id8" id="id27"&gt;内核的包转发：&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#nat" id="id28"&gt;NAT模式：&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id9" id="id29"&gt;NAT模式的拓扑图&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id10" id="id30"&gt;NAT模式的工作过程:&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id11" id="id31"&gt;NAT模式的几个细节问题&lt;/a&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#natbugs" id="id32"&gt;NAT模式的Bugs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#icmp" id="id33"&gt;ICMP重定向问题&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="dr-direct-routing"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id12"&gt;DR模式：(Direct Routing)直接路由模式&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="dr"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id13"&gt;DR模式的网络拓扑：&lt;/a&gt;&lt;/h3&gt;
+&lt;img alt="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" src="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id14"&gt;DR模式的工作过程：&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;当一个client发送一个WEB请求到VIP，LVS服务器根据VIP选择对应的real-server的Pool，根据算法，在Pool中选择一台Real-server，LVS在hash表中记录该次连接，然后将client的请求包发给选择的Real-server，最后选择的Real-server把应答包直接传给client；当client继续发包过来时，LVS根据更才记录的hash表的信息，将属于此次连接的请求直接发到刚才选择的Real-server上；当连接中止或者超时，hash表中的记录将被删除。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id15"&gt;DR模式的几个细节：&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="section" id="lvsreal-server"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id16"&gt;LVS和Real-server必须在相同的网段&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;DR模式在转发client的包时，只修改了包目的MAC地址为选定的Real-server的mac地址，所以如果LVS和Real-server在不通的广播域内，那么Real-server就没办法接收到转发的包。下面是mac地址的修改过程：&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" src="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="lvs"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id17"&gt;LVS不需要开启路由转发：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;LVS的DR模式不需要开启路由转发功能，就可以正常的工作，出于安全考虑，如果不需要转发功能，最好关闭。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="arp"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id18"&gt;ARP问题：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;通常，DR模式需要在Real-server上配置VIP，配置的方式为：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_7bc82f92dadd42b68e1c8b359c076481-1"&gt;&lt;/a&gt;/sbin/ifconfig lo:0 inet VIP netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
+&lt;/pre&gt;&lt;p&gt;原因在于，当LVS把client的包转发给Real-server时，因为包的目的IP地址是VIP，那么如果Real-server收到这个包后，发现包的目的IP不是自己的系统IP，那么就会认为这个包不是发给自己的，就会丢弃这个包，所以需要将这个IP地址绑到网卡上；当发送应答包给client时，Real-server就会把包的源和目的地址调换，直接回复给client。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于ARP广播：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;上面绑定VIP的掩码是”255.255.255.255″，说明广播地址是其本身，那么他就不会将ARP发送到实际的自己该属于的广播域了，这样防止与LVS上VIP冲突，而导致IP冲突。&lt;/li&gt;
+&lt;li&gt;另外在Linux的Real-server上，需要设置ARP的sysctl选项:（下面是举例说明设置项的）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;假设服务器上ip地址如下所示:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+System Interface MAC Address IP Address
+HN eth0 00:0c:29:b3:a2:54 192.168.18.10
+HN eth3 00:0c:29:b3:a2:68 192.168.18.11
+HN eth4 00:0c:29:b3:a2:5e 192.168.18.12
+client eth0 00:0c:29:d2:c7:aa 192.168.18.129
+&lt;/pre&gt;
+&lt;p&gt;当我从192.168.18.129 ping 192.168.18.10时，tcpdump抓包发现:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+00:0c:29:d2:c7:aa &amp;gt; ff:ff:ff:ff:ff:ff, ARP, length 60: arp who-has 192.168.18.10 tell 192.168.18.129
+00:0c:29:b3:a2:5e &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp reply 192.168.18.10 is-at 00:0c:29:b3:a2:5e
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp reply 192.168.18.10 is-at 00:0c:29:b3:a2:54
+00:0c:29:b3:a2:68 &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp reply 192.168.18.10 is-at 00:0c:29:b3:a2:68
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:5e, IPv4, length 98: 192.168.18.129 &amp;gt; 192.168.18.10: ICMP echo request, id 32313, seq 1, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, IPv4, length 98: 192.168.18.10 &amp;gt; 192.168.18.129: ICMP echo reply, id 32313, seq 1, length 64
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:5e, IPv4, length 98: 192.168.18.129 &amp;gt; 192.168.18.10: ICMP echo request, id 32313, seq 2, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, IPv4, length 98: 192.168.18.10 &amp;gt; 192.168.18.129: ICMP echo reply, id 32313, seq 2, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp who-has 192.168.18.129 tell 192.168.18.10
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:54, ARP, length 60: arp reply 192.168.18.129 is-at 00:0c:29:d2:c7:aa
+&lt;/pre&gt;
+&lt;p&gt;三个端口都发送了arp的reply包，但是192.168.18.129使用的第一个回应的eth4的mac地址作为ping请求的端口，由于192.168.18.10是icmp包中的目的地址，那么ping的应答包，会从eth0端口发出。&lt;/p&gt;
+&lt;p&gt;如果Real-server有个多个网卡，每个网卡在不同的网段，那么可以过滤掉非本网卡ARP请求的回应；但是如果多个网卡的ip在一个网段，那么就不行了。&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_f5ffeb4b3a644ba88e7b57b9b28b021f-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_filter&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;对于多个接口在相同网段可以设置下面的来防止：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_ignore&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-2"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_announce&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;还是从192.168.18.129 ping 192.168.18.10时，tcpdump抓包发现:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+00:0c:29:d2:c7:aa &amp;gt; ff:ff:ff:ff:ff:ff, ARP, length 60: arp who-has 192.168.18.10 tell 192.168.18.129
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp reply 192.168.18.10 is-at 00:0c:29:b3:a2:54
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:54, IPv4, length 98: 192.168.18.129 &amp;gt; 192.168.18.10: ICMP echo request, id 32066, seq 1, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, IPv4, length 98: 192.168.18.10 &amp;gt; 192.168.18.129: ICMP echo reply, id 32066, seq 1, length 64
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:54, IPv4, length 98: 192.168.18.129 &amp;gt; 192.168.18.10: ICMP echo request, id 32066, seq 2, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, IPv4, length 98: 192.168.18.10 &amp;gt; 192.168.18.129: ICMP echo reply, id 32066, seq 2, length 64
+00:0c:29:b3:a2:54 &amp;gt; 00:0c:29:d2:c7:aa, ARP, length 60: arp who-has 192.168.18.129 tell 192.168.18.10
+00:0c:29:d2:c7:aa &amp;gt; 00:0c:29:b3:a2:54, ARP, length 60: arp reply 192.168.18.129 is-at 00:0c:29:d2:c7:aa
+&lt;/pre&gt;
+&lt;p&gt;看到了么，现在只有eth0会回应arp请求了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;arp报文格式：&lt;/strong&gt;&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" src="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg"&gt;
+&lt;p&gt;请求报文：MAC地址字段是空的。
+应答报文：所有字段都又内容。:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+The arp_announce/arp_ignore reference：
+
+arp_announce – INTEGER
+Define different restriction levels for announcing the local
+source IP address from IP packets in ARP requests sent on
+interface:
+0 – (default) Use any local address, configured on any interface
+1 – Try to avoid local addresses that are not in the target’s
+subnet for this interface. This mode is useful when target
+hosts reachable via this interface require the source IP
+address in ARP requests to be part of their logical network
+configured on the receiving interface. When we generate the
+request we will check all our subnets that include the
+target IP and will preserve the source address if it is from
+such subnet. If there is no such subnet we select source
+address according to the rules for level 2.
+2 – Always use the best local address for this target.
+In this mode we ignore the source address in the IP packet
+and try to select local address that we prefer for talks with
+the target host. Such local address is selected by looking
+for primary IP addresses on all our subnets on the outgoing
+interface that include the target IP address. If no suitable
+local address is found we select the first local address
+we have on the outgoing interface or on all other interfaces,
+with the hope we will receive reply for our request and
+even sometimes no matter the source IP address we announce.
+
+The max value from conf/{all,interface}/arp_announce is used.
+
+Increasing the restriction level gives more chance for
+receiving answer from the resolved target while decreasing
+the level announces more valid sender’s information.
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;arp_announce&lt;/tt&gt; 用来限制，是否使用发送的端口的ip地址来设置ARP的源地址：&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;“0″代表是用ip包的源地址来设置ARP请求的源地址。&lt;/li&gt;
+&lt;li&gt;“1″代表不使用ip包的源地址来设置ARP请求的源地址，如果ip包的源地址是和该端口的IP地址相同的子网，那么用ip包的源地址，来设置ARP请求的源地址，否则使用”2″的设置。&lt;/li&gt;
+&lt;li&gt;“2″代表不使用ip包的源地址来设置ARP请求的源地址，而由系统来选择最好的接口来发送。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当内网的机器要发送一个到外部的ip包，那么它就会请求路由器的Mac地址，发送一个arp请求，这个arp请求里面包括了自己的ip地址和Mac地址，而linux默认是使用ip的源ip地址作为arp里面的源ip地址，而不是使用发送设备上面的 ，这样在lvs这样的架构下，所有发送包都是同一个VIP地址，那么arp请求就会包括VIP地址和设备 Mac，而路由器收到这个arp请求就会更新自己的arp缓存，这样就会造成ip欺骗了，VIP被抢夺，所以就会有问题。&lt;/p&gt;
+&lt;p&gt;现在假设一个场景来解释 &lt;tt class="docutils literal"&gt;arp_announce&lt;/tt&gt; ：&lt;/p&gt;
+&lt;pre class="code rst"&gt;&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-1"&gt;&lt;/a&gt;Real-server的ip地址：202.106.1.100(public local address)，
+&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-2"&gt;&lt;/a&gt;172.16.1.100(private local address)，
+&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-3"&gt;&lt;/a&gt;202.106.1.254(VIP)
+&lt;/pre&gt;&lt;p&gt;如果发送到client的ip包产生的arp请求的源地址是202.106.1.254(VIP),那么LVS上的VIP就会被冲掉，因为交换机上现在的arp对应关系是Real-server上的VIP对应自己的一个MAC，那么LVS上的VIP就失效了。:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+arp_ignore – INTEGER
+Define different modes for sending replies in response to
+received ARP requests that resolve local target IP addresses:
+0 – (default): reply for any local target IP address, configured
+on any interface
+1 – reply only if the target IP address is local address
+configured on the incoming interface
+2 – reply only if the target IP address is local address
+configured on the incoming interface and both with the
+sender’s IP address are part from same subnet on this interface
+3 – do not reply for local addresses configured with scope host,
+only resolutions for global and link addresses are replied
+4-7 – reserved
+8 – do not reply for all local addresses
+
+The max value from conf/{all,interface}/arp_ignore is used
+when ARP request is received on the {interface}
+&lt;/pre&gt;
+&lt;p&gt;“0″,代表对于arp请求，任何配置在本地的目的ip地址都会回应，不管该arp请求的目的地址是不是接口的ip；如果有多个网卡，并且网卡的ip都是一个子网，那么从一个端口进来的arp请求，别的端口也会发送回应。
+“1″,代表如果arp请求的目的地址，不是该arp请求包进入的接口的ip地址，那么不回应。
+“2″,要求的更苛刻，除了”1″的条件外，还必须要求arp发送者的ip地址和arp请求进入的接口的ip地址是一个网段的。
+(后面略)&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="ip-tunneling"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id19"&gt;IP Tunneling模式：&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id20"&gt;IP Tunneling的拓扑图&lt;/a&gt;&lt;/h3&gt;
+&lt;img alt="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" src="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id21"&gt;IP Tunneling的工作过程&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;1&amp;gt; client 发送request包到LVS服务器的VIP上。&lt;/p&gt;
+&lt;p&gt;2&amp;gt; VIP按照算法选择后端的一个Real-server，并将记录一条消息到hash表中，然后将client的request包封装到一个新的IP包里，新IP包的目的IP是Real-server的IP，然后转发给Real-server。&lt;/p&gt;
+&lt;p&gt;3&amp;gt; Real-server收到包后，解封装，取出client的request包，发现他的目的地址是VIP，而Real-server发现在自己的lo:0口上有这个IP地址，于是处理client的请求，然后将relpy这个request包直接发给client。&lt;/p&gt;
+&lt;p&gt;4&amp;gt; 该client的后面的request包，LVS直接按照hash表中的记录直接转发给Real-server，当传输完毕或者连接超时，那么将删除hash表中的记录。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id22"&gt;IP Tunneling的几个细节问题&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="section" id="ip"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id23"&gt;IP封包的过程：(如图)&lt;/a&gt;&lt;/h4&gt;
+&lt;img alt="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" src="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id6"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id24"&gt;LVS和Real-server不需要在一个网段：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;由于通过IP Tunneling 封装后，封装后的IP包的目的地址为Real-server的IP地址，那么只要Real-server的地址能路由可达，Real-server在什么网络里都可以，这样可以减少对于公网IP地址的消耗，但是因为要处理IP Tunneling封装和解封装的开销，那么效率不如DR模式。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="real-server"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id25"&gt;Real-server的系统设置：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;由于需要Real-server支持IP Tunneling，所以设置与DR模式不太一样，LVS不需要设置tunl设备，LVS本身可以进行封装
+i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-1"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0 &lt;span class="m"&gt;172&lt;/span&gt;.16.1.254 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-2"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-3"&gt;&lt;/a&gt;tunl0 Link encap:IPIP Tunnel HWaddr
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-4"&gt;&lt;/a&gt;inet addr:172.16.1.254 Mask:255.255.255.255
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-5"&gt;&lt;/a&gt;UP RUNNING NOARP MTU:1480 Metric:1
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-6"&gt;&lt;/a&gt;RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-7"&gt;&lt;/a&gt;TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-8"&gt;&lt;/a&gt;collisions:0 txqueuelen:0
+&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-9"&gt;&lt;/a&gt;RX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt; TX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;当添加tunl0设备时，自动载入需要的模块：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-1"&gt;&lt;/a&gt;shell&amp;gt; lsmod &lt;span class="p"&gt;|&lt;/span&gt;grep ipip
+&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-2"&gt;&lt;/a&gt;ipip &lt;span class="m"&gt;7516&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-3"&gt;&lt;/a&gt;tunnel4 &lt;span class="m"&gt;2700&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; ipip
+&lt;/pre&gt;&lt;p&gt;其中，ipip依赖于tunnel4，假如现在删除tunnel4的话：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_3bdb51da668e412682b13029e9bb0a82-1"&gt;&lt;/a&gt;shell&amp;gt; rmmod tunnel4
+&lt;a name="rest_code_3bdb51da668e412682b13029e9bb0a82-2"&gt;&lt;/a&gt;ERROR: Module tunnel4 is in use by ipip
+&lt;/pre&gt;&lt;p&gt;如果添加tunl0失败，那么可能是内核没有开启tunneling功能，默认是以模块形式，加载到内核里的：&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" src="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id7"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id26"&gt;ARP问题：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;如果LVS和Real-server不在一个网络内，不需要处理ARP问题，如果在相同网络，那么处理方法和DR模式一样，但是如果一样，我就不知道选择tun模式有什么好理由了，DR似乎效率更高些吧。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id8"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id27"&gt;内核的包转发：&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;IP Tunneling模式不需要开启ip_forward功能。&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="nat"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id28"&gt;NAT模式：&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="id9"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id29"&gt;NAT模式的拓扑图&lt;/a&gt;&lt;/h3&gt;
+&lt;img alt="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" src="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id10"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id30"&gt;NAT模式的工作过程:&lt;/a&gt;&lt;/h3&gt;
+&lt;img alt="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" src="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg"&gt;
+&lt;pre class="code rst"&gt;&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-1"&gt;&lt;/a&gt;client：202.100.1.2
+&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-2"&gt;&lt;/a&gt;VIP：202.103.106.5
+&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-3"&gt;&lt;/a&gt;Real-server：172.16.0.2 和 172.16.0.3（提供http和ftp服务）
+&lt;/pre&gt;&lt;p&gt;1&amp;gt; client发送request到LVS的VIP上，VIP选择一个Real-server，并记录连接信息到hash表中，然后修改client的request的目的IP地址为Real-server的地址，将请求发给Real-server;&lt;/p&gt;
+&lt;p&gt;2&amp;gt; Real-server收到request包后，发现目的IP是自己的IP，于是处理请求，然后发送reply给LVS;&lt;/p&gt;
+&lt;p&gt;3&amp;gt; LVS收到reply包后，修改reply包的的源地址为VIP，发送给client;&lt;/p&gt;
+&lt;p&gt;4&amp;gt; 从client来的属于本次连接的包，查hash表，然后发给对应的Real-server。&lt;/p&gt;
+&lt;p&gt;5&amp;gt; 当client发送完毕，此次连接结束或者连接超时，那么LVS自动从hash表中删除此条记录。&lt;/p&gt;
+&lt;p&gt;下面是地址转换的过程：&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" src="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id11"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id31"&gt;NAT模式的几个细节问题&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="section" id="natbugs"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id32"&gt;NAT模式的Bugs&lt;/a&gt;&lt;/h4&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;在Linux的2.6版本，LVS-NAT不能做防火墙，在只有一个网关的情况下，没有任何问题。&lt;/li&gt;
+&lt;li&gt;防火墙不兼容：LVS的架构中，LVS的前端不能设置防火墙，修复的补丁”NFCT” patch。&lt;/li&gt;
+&lt;li&gt;源路由问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="icmp"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id33"&gt;ICMP重定向问题&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;一. 对于路由器来说，只有当如下条件同时满足的时候，才进行重定向&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;数据包的入接口和路由后的指定的出接口是同一个接口。&lt;/li&gt;
+&lt;li&gt;数据包的源IP地址和该包应走的下一跳IP地址属于同一个网段。&lt;/li&gt;
+&lt;li&gt;数据报非源路由的（这种情况应该比较少见了，源路由多见于Token Ring）。&lt;/li&gt;
+&lt;li&gt;系统开启重定向功能。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;&lt;strong&gt;例如：&lt;/strong&gt;&lt;/dt&gt;
+&lt;dd&gt;两个路由器都开启了IP重定向功能。HostA 的默认网关为1.1.1.1。当HostA要和不在同一网段中的HostB通信的时候，会把数据报递交给默认网关RT1。然而RT1经过查找发现到达3.3.3.3的路径下一跳恰恰是经由自己的E0/1口的RT2接口1.1.1.2。满足上述条件，将会发生重定向。&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;二. LVS为什么会产生ICMP重定向问题：
+* 在LVS-NAT模式下，如果LVS的各个成员，client，LVS，Real-server在同一个网段(比如：192.168.1.*/24)；&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;当Real-server将Reply发送回LVS时，Reply包是 RIP -&amp;gt; CIP的，LVS看到RIP-&amp;gt; CIP实际上根本没必要经过LVS，直接到网关就行了，因为大家在一个网段，所以产生ICMP重定向发送给Real-server；&lt;/li&gt;
+&lt;li&gt;Real-server收到ICMP重定向包后，如果Real-server的ICMP重定向开启了，Real-server就会处理ICMP重定向包，直接将Reply包发给网关，这时Reply包头并没有被LVS重写，所以LVS负载出现了问题。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意：这种情况只会出现在所有的LVS的成员都在一个网段的情况下。&lt;/p&gt;
+&lt;p&gt;重定向的处理办法（Real-server的配置）：&lt;/p&gt;
+&lt;p&gt;1&amp;gt; 关闭Real-server的重定向，忽略LVS发来的重定向包&lt;/p&gt;
+&lt;p&gt;2&amp;gt; 删除到网段的路由：&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" src="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" style="width: 600px;"&gt;
+&lt;p&gt;执行：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_3534305f9d9e4f658c7bfd083be656c1-1"&gt;&lt;/a&gt;realserver:/etc/lvs#route del -net &lt;span class="m"&gt;192&lt;/span&gt;.168.1.0 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.0 dev eth0
+&lt;/pre&gt;&lt;p&gt;路由已经被删除了：&lt;/p&gt;
+&lt;img alt="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" src="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" style="width: 600px;"&gt;
+&lt;p&gt;3&amp;gt; LVS-NAT模式支持四层的端口重写：
+LVS-DR，LVS-TUN不能修改client发来的请求的目的端口，但是LVS-NAT可以，参考命令：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_a7053a6227a74681930a7b1ecd35b8a9-1"&gt;&lt;/a&gt;shell&amp;gt; ipvsadm -a -t VIP:PORT -r RIP:NEWPORT -m -w &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;LVS的三种转发模式就先说到这吧，具体的细节可以参考LVS的HOWTO文档。&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>lvs</category><guid>https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>Python colored output</title><link>https://vimer.im/posts/python_colored_output/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;img alt="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg" src="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg"&gt;
+&lt;p&gt;下面是颜色的代码&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;30mGray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-2"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;31mRed like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-3"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;32mGreen like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-4"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;33mYellow like Yolk&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;34mBlue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-6"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;35mMagenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-7"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;36mCyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-8"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;37mWhite like Whipped Cream&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-9"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;38mCrimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-10"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;41mHighlighted Red like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-11"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;42mHighlighted Green like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-12"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;43mHighlighted Brown like Bear&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-13"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;44mHighlighted Blue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-14"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;45mHighlighted Magenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-15"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;46mHighlighted Cyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-16"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;47mHighlighted Gray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-17"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;48mHighlighted Crimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/python_colored_output/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>LVS网卡软中断配置</title><link>https://vimer.im/posts/adjust_nic_irq_for_lvs/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;这是之前做LVS的网卡软中断配置时整理的一个文档，网上的资料不是很全，将配置方法share给大家。&lt;/p&gt;
+&lt;p&gt;为什么要配置网卡软中断，主要是因为在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助于提高系统的整体吞吐能力和性能。
+先看下未升级之前的效果：可以看到网卡软中断被分配到了两个指定的CPU核心上:&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg" src="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg"&gt;
+&lt;p&gt;经过升级内核调整参数后的效果：&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" src="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" style="width: 600px;"&gt;
+&lt;p&gt;软中断被均匀的分配到8个核心上，下面来说下具体过程&lt;/p&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;第一步&lt;/h2&gt;
+&lt;p&gt;将内核升级到2.6.32以上，升级过程略去&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-1"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？这个主要是因为2.6.18还不支持RPS这个特性那什么是rps呢？具体可以参看：
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-2"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-3"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-4"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-5"&gt;&lt;/a&gt;这个主要是因为2.6.18不支持RPS这个特性
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-6"&gt;&lt;/a&gt;那什么是rps呢？具体可以参看：
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-7"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
+&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-8"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;第二步：&lt;/h2&gt;
+&lt;p&gt;如果你的服务器网卡和我一样是Broadcom的，那么你就得做这一步，不是请跳到第三步&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" src="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" style="width: 600px; height: 44px;"&gt;
+&lt;p&gt;在/etc/modprobe.conf加上下面这行： options bnx2 disable_msi=1
+改完这个重新加载下网卡模块modprobe -r bnx2;modprobe bnx2或者重新启动服务器。&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-1"&gt;&lt;/a&gt;为什么要加这个？
+&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-2"&gt;&lt;/a&gt;这个主要是因为broadcom网卡开启msi后，会造成后面的修改smp_affinity丌生效，intel的网卡没这个问题。
+&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-3"&gt;&lt;/a&gt;
+&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-4"&gt;&lt;/a&gt;msi是什么？下面的链接有解析：
+&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-5"&gt;&lt;/a&gt;http://lwn.net/Articles/44139/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h2&gt;第三步：&lt;/h2&gt;
+&lt;p&gt;停用irqbalance
+/etc/init.d/irqbalance stop
+这个是一个自动调整中断的工具，有兴趣的可以看下irqbalance的官方网站：
+&lt;a class="reference external" href="http://irqbalance.org/"&gt;http://irqbalance.org/&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;第四步：&lt;/h2&gt;
+&lt;p&gt;设置eth0、eth1对应中断号的 &lt;tt class="docutils literal"&gt;smp_affinity&lt;/tt&gt; 为 “ff”
+先看一下网卡的中断号：&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" src="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" style="width: 600px;"&gt;
+&lt;p&gt;从图中可以看到网卡eth1的中断号为16,eth0的中断号为18
+将/proc/irq/中断号/smp_affinity修改为ff，修改完成后就可以开启lvs了，现在中断应该均分到各个核心上了。&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-1"&gt;&lt;/a&gt;smp_affinity这个参数是怎么得来的？ 可参考下面链接：
+&lt;a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-2"&gt;&lt;/a&gt;http://www.cs.uwaterloo.ca/~brecht/servers/apic/SMP-affinity.txt
+&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</description><category>irq</category><category>lvs</category><guid>https://vimer.im/posts/adjust_nic_irq_for_lvs/</guid><pubDate>Sat, 08 Sep 2012 12:17:59 GMT</pubDate></item></channel></rss>

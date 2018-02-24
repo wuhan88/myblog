@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>博客迁移到tinkerer | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/begin_tinkerer/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../use_nginx_uwsgi_deploy_django/" title="使用NGINX+UWSGI来部署Django" type="text/html">
+<link rel="next" href="../search_for_an_item_in_a_lua_list/" title="如何判断一个值在lua的table里" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="博客迁移到tinkerer">
+<meta property="og:url" content="https://vimer.im/posts/begin_tinkerer/">
+<meta property="og:description" content="在11年时，将我的博客从wordpress+mysql换成了django+sqlite，具体可见 将博客从wordpress迁移到django 这篇文章， 在折腾精神的感召下，在12年底我将博客程序又换掉了，这次换成了一个基于 sphinx 静态博客生成器 tinkerer ， tinkerer 使用 reStructuredText  作为标记语言，可以生成文章的分类，tag，支持评论和代码高亮">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-01-29T20:17:59+08:00">
+<meta property="article:tag" content="blog">
+<meta property="article:tag" content="sphinx">
+<meta property="article:tag" content="staic site">
+<meta property="article:tag" content="tinkerer">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">博客迁移到tinkerer</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2013-01-29T20:17:59+08:00" itemprop="datePublished" title="2013-01-29 20:17">2013-01-29 20:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/begin_tinkerer.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>在11年时，将我的博客从wordpress+mysql换成了django+sqlite，具体可见 <a class="reference external" href="http://jasonwu.me/2011/05/29/The-blog-from-wordpress-migrate-django.html">将博客从wordpress迁移到django</a> 这篇文章， 在折腾精神的感召下，在12年底我将博客程序又换掉了，这次换成了一个基于 <a class="reference external" href="http://sphinx.pocoo.org/">sphinx</a> 静态博客生成器 <a class="reference external" href="http://tinkerer.me/pages/documentation.html">tinkerer</a> ， <tt class="docutils literal">tinkerer</tt> 使用 <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a>  作为标记语言，可以生成文章的分类，tag，支持评论和代码高亮，文章评论使用 <tt class="docutils literal">disqus</tt> , 高亮代码使用 <tt class="docutils literal">Pygments</tt> 。</p>
+<p>说说为什么使用 <tt class="docutils literal">tinkerer</tt> ，从打算把博客弄成静态站点开始我尝试了很多项目，如 <tt class="docutils literal">octpress</tt> 、 <tt class="docutils literal">jekyll</tt> 、 <tt class="docutils literal">pelican</tt> ，一次偶然的机会在 <tt class="docutils literal">bitbucket</tt> 上发现了 <tt class="docutils literal">tinkerer</tt> ，试用后感觉比较顺手，并且可以使用sphinx的扩展，我比较熟悉 <tt class="docutils literal">sphinx</tt> 和 <tt class="docutils literal">reStructuredText</tt> 的使用，平时就用这两个东西写文档，因此选择了基于 <tt class="docutils literal">sphinx</tt> 的 <tt class="docutils literal">tinkerer</tt> 。我最开始使用的是0.4 beta版还存在一些bug，然后我自己做了一些修改pull给作者，作者很快就接受了我的pull request，并表示感谢，现在1.0版本已经发布，基本上没有比较明显的bug了，只是有一些细节可能不是那么完美，还有一个就是主题很少，目前默认的几款主题，都不是很美观，目前我在移植一款主题。</p>
+<p>tinkerer的一些使用经验:</p>
+<p>＊ 自定义博客的侧边栏</p>
+<p>这里以创建友情链接的plugin作为例子，复制boilerplate主题目录下recent.html为一个新的文件，如friendslinks.html，然后改成如下这样就可以了:</p>
+<pre class="code html"><a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-1"></a>{#-
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-2"></a>    boilerplate/friendslinks.html
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-3"></a>    ~~~~~~~~~~~~~~~~~~~~~
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-4"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-5"></a>    Sidebar list of all tags.
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-6"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-7"></a>    :copyright: Copyright 2012 by Iñigo Serna
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-8"></a>    :license: FreeBSD, see LICENSE file
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-9"></a>-#}
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-10"></a>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-11"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"widget"</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-12"></a>    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Friends links<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-13"></a>    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-14"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"http://www.qdyongai.cn/?from=jason"</span><span class="p">&gt;</span>龙哥-网站设计<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-15"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"http://www.zipeng.info/?from=jason"</span><span class="p">&gt;</span>子鹏-kun的记事本<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-16"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"http://www.aaronw.me/?from=jason"</span><span class="p">&gt;</span>王炜-我的技术生活<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-17"></a>        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"http://cuikai-wh.com/?from=jason"</span><span class="p">&gt;</span>小轰-时光立方<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-18"></a>    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<a name="rest_code_2f83e455dcbc498c885e3cd87dd608ec-19"></a><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+<p><strong>这里要注意的是默认的modern5主题是继承于boilerplate这个主题，因此只要修改boilerplate这个主题就可以了</strong></p>
+<p>然后在conf.py中加入这个文件的配置</p>
+<pre class="code python"><a name="rest_code_59ceab4634c0461680e69237fe913ecf-1"></a><span class="c1"># Add templates to be rendered in sidebar here</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-2"></a><span class="n">html_sidebars</span> <span class="o">=</span> <span class="p">{</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-3"></a>    <span class="s2">"**"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"searchbox.html"</span><span class="p">,</span> <span class="s2">"categories.html"</span><span class="p">,</span> <span class="s2">"recent.html"</span><span class="p">,</span> <span class="s2">"friendslinks.html"</span><span class="p">,</span> <span class="s2">"weibo.html"</span><span class="p">]</span>
+<a name="rest_code_59ceab4634c0461680e69237fe913ecf-4"></a>    <span class="p">}</span>
+</pre>
+<ul class="simple">
+<li>创建一个makefile，使用过 <tt class="docutils literal">sphinx</tt> 的人应该都知道 <tt class="docutils literal">sphinx</tt> 会生成一个 makefile，这样可以直接使用make html就可以生成文档了，tinker没有提供，那么我们可以自己写一个，让我么操作的更加自动化，如下是我 <tt class="docutils literal">Makefile</tt> 示例，大家可以参照下：</li>
+</ul>
+<pre class="code bash"><a name="rest_code_d76f05210fcb45b08b3804125c50f578-1"></a>all: build commit update
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-2"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-3"></a>clean:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-4"></a>             rm -rf blog/html/
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-5"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-6"></a>build:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-7"></a>             tinker -b
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-8"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-9"></a>serve:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-10"></a>             <span class="nb">cd</span> blog/html/ <span class="o">&amp;&amp;</span> python -m SimpleHTTPServer
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-11"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-12"></a>commit:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-13"></a>             hg commit ./ -m <span class="s1">'add new post'</span><span class="o">&amp;&amp;</span>hg push
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-14"></a>                     @echo <span class="s2">"Done..."</span>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-15"></a>
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-16"></a>update:
+<a name="rest_code_d76f05210fcb45b08b3804125c50f578-17"></a>             ssh root@jasonwu.me <span class="s1">'cd /home/admin/jasonwu.me/&amp;&amp;hg pull&amp;&amp;hg update'</span>
+</pre>
+<p>这个makefile主要实现了生成文档，在本地起一个http服务器来查看生成的文章效果，提交到bitbucket和更新vps上的博客内容等功能，将这些操作完全的自动化，是不是很方便，大家玩的开心。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/blog/" rel="tag">blog</a></li>
+            <li><a class="tag p-category" href="../../categories/sphinx/" rel="tag">sphinx</a></li>
+            <li><a class="tag p-category" href="../../categories/staic-site/" rel="tag">staic site</a></li>
+            <li><a class="tag p-category" href="../../categories/tinkerer/" rel="tag">tinkerer</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../use_nginx_uwsgi_deploy_django/" rel="prev" title="使用NGINX+UWSGI来部署Django">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../search_for_an_item_in_a_lua_list/" rel="next" title="如何判断一个值在lua的table里">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/begin_tinkerer/",
+        disqus_title="\u535a\u5ba2\u8fc1\u79fb\u5230tinkerer",
+        disqus_identifier="cache/posts/begin_tinkerer.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

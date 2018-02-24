@@ -1,0 +1,47 @@
+<pre class="code python"><a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-1"></a><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-2"></a>    <span class="k">print</span> <span class="s1">&#39;args = &#39;</span><span class="p">,</span> <span class="n">args</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-3"></a>    <span class="k">print</span> <span class="s1">&#39;kwargs = &#39;</span><span class="p">,</span> <span class="n">kwargs</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-4"></a>    <span class="k">print</span> <span class="s1">&#39;---------------------------------------&#39;</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-5"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-6"></a>    <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-7"></a>    <span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-8"></a>    <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-9"></a>    <span class="n">foo</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre><p>输出结果如下：</p>
+<pre class="literal-block">
+| args = (1, 2, 3, 4)
+| kwargs = {}
+| ---------------------------------------
+| args = ()
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = (1, 2, 3, 4)
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = ('a', 1, None)
+| kwargs = {'a': 1, 'c': 3, 'b': '2'}
+| ---------------------------------------
+</pre>
+<p>可以看到，这两个是python中的可变参数。 <tt class="docutils literal">*args</tt> 表示任何多个无名参数，它是一个tuple； <tt class="docutils literal">**kwargs</tt> 表示关键字参数，它是一个dict。并且同时使用 <tt class="docutils literal">*args</tt> 和 <tt class="docutils literal">**kwargs</tt> 时，必须 <tt class="docutils literal">*args</tt> 参数列要在 <tt class="docutils literal">**kwargs</tt> 前，像foo(a=1, b='2', c=3, a', 1, None, )这样调用的话，会提示语法错误“SyntaxError: non-keyword arg after keyword arg”。</p>
+<p>呵呵，知道 <tt class="docutils literal">*args</tt> 和 <tt class="docutils literal">**kwargs</tt> 是什么了吧。还有一个很漂亮的用法，就是创建字典：</p>
+<pre class="code python"><a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-1"></a><span class="k">def</span> <span class="nf">kw_dict</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-2"></a>    <span class="k">return</span> <span class="n">kwargs</span>
+<a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-3"></a>    <span class="k">print</span> <span class="n">kw_dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+</pre><p>其实python中就带有dict类，使用dict(a=1,b=2,c=3)即可创建一个字典了。</p>
+<p>另:连接两个字典的方法:</p>
+<p>第一种:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; a={'a':'a','b':'b'}
+&gt;&gt;&gt; m=dict(c='c',**a)
+&gt;&gt;&gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&gt;&gt;&gt;
+</pre>
+<p>第二种:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; a={'a':'a','b':'b'}
+&gt;&gt;&gt; m={'c':'c'}
+&gt;&gt;&gt; m.update(a)
+&gt;&gt;&gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+</pre>

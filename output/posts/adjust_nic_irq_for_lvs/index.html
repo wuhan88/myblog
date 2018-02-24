@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LVS网卡软中断配置 | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/adjust_nic_irq_for_lvs/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../the-solutions-to-libtool-Version-mismatch-error/" title="RPM打包时出现libtool: Version mismatch error问题解决方法" type="text/html">
+<link rel="next" href="../python_colored_output/" title="Python colored output" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="LVS网卡软中断配置">
+<meta property="og:url" content="https://vimer.im/posts/adjust_nic_irq_for_lvs/">
+<meta property="og:description" content="这是之前做LVS的网卡软中断配置时整理的一个文档，网上的资料不是很全，将配置方法share给大家。
+为什么要配置网卡软中断，主要是因为在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2012-09-08T20:17:59+08:00">
+<meta property="article:tag" content="irq">
+<meta property="article:tag" content="lvs">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">LVS网卡软中断配置</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2012-09-08T20:17:59+08:00" itemprop="datePublished" title="2012-09-08 20:17">2012-09-08 20:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/adjust_nic_irq_for_lvs.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>这是之前做LVS的网卡软中断配置时整理的一个文档，网上的资料不是很全，将配置方法share给大家。</p>
+<p>为什么要配置网卡软中断，主要是因为在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助于提高系统的整体吞吐能力和性能。
+先看下未升级之前的效果：可以看到网卡软中断被分配到了两个指定的CPU核心上:</p>
+<img alt="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg" src="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg"><p>经过升级内核调整参数后的效果：</p>
+<img alt="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" src="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" style="width: 600px;"><p>软中断被均匀的分配到8个核心上，下面来说下具体过程</p>
+<div class="section" id="id1">
+<h2>第一步</h2>
+<p>将内核升级到2.6.32以上，升级过程略去</p>
+<pre class="code bash"><a name="rest_code_6b98747541354417842c9c405b6390fb-1"></a>为什么要将2.6.18内核升级到2.6.32？这个主要是因为2.6.18还不支持RPS这个特性那什么是rps呢？具体可以参看：
+<a name="rest_code_6b98747541354417842c9c405b6390fb-2"></a>http://lwn.net/Articles/328339/
+<a name="rest_code_6b98747541354417842c9c405b6390fb-3"></a>http://lwn.net/Articles/378617/
+<a name="rest_code_6b98747541354417842c9c405b6390fb-4"></a>为什么要将2.6.18内核升级到2.6.32？
+<a name="rest_code_6b98747541354417842c9c405b6390fb-5"></a>这个主要是因为2.6.18不支持RPS这个特性
+<a name="rest_code_6b98747541354417842c9c405b6390fb-6"></a>那什么是rps呢？具体可以参看：
+<a name="rest_code_6b98747541354417842c9c405b6390fb-7"></a>http://lwn.net/Articles/328339/
+<a name="rest_code_6b98747541354417842c9c405b6390fb-8"></a>http://lwn.net/Articles/378617/
+</pre>
+</div>
+<div class="section" id="id2">
+<h2>第二步：</h2>
+<p>如果你的服务器网卡和我一样是Broadcom的，那么你就得做这一步，不是请跳到第三步</p>
+<img alt="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" src="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" style="width: 600px; height: 44px;"><p>在/etc/modprobe.conf加上下面这行： options bnx2 disable_msi=1
+改完这个重新加载下网卡模块modprobe -r bnx2;modprobe bnx2或者重新启动服务器。</p>
+<pre class="code bash"><a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-1"></a>为什么要加这个？
+<a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-2"></a>这个主要是因为broadcom网卡开启msi后，会造成后面的修改smp_affinity丌生效，intel的网卡没这个问题。
+<a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-3"></a>
+<a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-4"></a>msi是什么？下面的链接有解析：
+<a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-5"></a>http://lwn.net/Articles/44139/
+</pre>
+</div>
+<div class="section" id="id3">
+<h2>第三步：</h2>
+<p>停用irqbalance
+/etc/init.d/irqbalance stop
+这个是一个自动调整中断的工具，有兴趣的可以看下irqbalance的官方网站：
+<a class="reference external" href="http://irqbalance.org/">http://irqbalance.org/</a></p>
+</div>
+<div class="section" id="id4">
+<h2>第四步：</h2>
+<p>设置eth0、eth1对应中断号的 <tt class="docutils literal">smp_affinity</tt> 为 “ff”
+先看一下网卡的中断号：</p>
+<img alt="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" src="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" style="width: 600px;"><p>从图中可以看到网卡eth1的中断号为16,eth0的中断号为18
+将/proc/irq/中断号/smp_affinity修改为ff，修改完成后就可以开启lvs了，现在中断应该均分到各个核心上了。</p>
+<pre class="code bash"><a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-1"></a>smp_affinity这个参数是怎么得来的？ 可参考下面链接：
+<a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-2"></a>http://www.cs.uwaterloo.ca/~brecht/servers/apic/SMP-affinity.txt
+</pre>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/irq/" rel="tag">irq</a></li>
+            <li><a class="tag p-category" href="../../categories/lvs/" rel="tag">lvs</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../the-solutions-to-libtool-Version-mismatch-error/" rel="prev" title="RPM打包时出现libtool: Version mismatch error问题解决方法">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../python_colored_output/" rel="next" title="Python colored output">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/adjust_nic_irq_for_lvs/",
+        disqus_title="LVS\u7f51\u5361\u8f6f\u4e2d\u65ad\u914d\u7f6e",
+        disqus_identifier="cache/posts/adjust_nic_irq_for_lvs.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>使用NGINX+UWSGI来部署Django | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/use_nginx_uwsgi_deploy_django/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../the_unp_reading_notes_io_model/" title="unp读书笔记（第六章I/O模型）" type="text/html">
+<link rel="next" href="../begin_tinkerer/" title="博客迁移到tinkerer" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="使用NGINX+UWSGI来部署Django">
+<meta property="og:url" content="https://vimer.im/posts/use_nginx_uwsgi_deploy_django/">
+<meta property="og:description" content="关于UWSGI的介绍不多说了，想了解的可以自己去搜，uwsgi性能还蛮不错，我们之前使用的fastcgi方式来跑django，前端用F5做负载均衡，用户数增加后服务器的load很高，但换uwsgi服务器的load下降不少，废话不多说，进入正题。
+编译安装nginx，用的nginx-0.8.54，目前最新的stable版本
+wget http://nginx.org/download/nginx-0">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2012-12-12T20:17:59+08:00">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="uwsgi">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">使用NGINX+UWSGI来部署Django</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2012-12-12T20:17:59+08:00" itemprop="datePublished" title="2012-12-12 20:17">2012-12-12 20:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/use_nginx_uwsgi_deploy_django.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>关于UWSGI的介绍不多说了，想了解的可以自己去搜，uwsgi性能还蛮不错，我们之前使用的fastcgi方式来跑django，前端用F5做负载均衡，用户数增加后服务器的load很高，但换uwsgi服务器的load下降不少，废话不多说，进入正题。
+编译安装nginx，用的nginx-0.8.54，目前最新的stable版本</p>
+<pre class="code bash"><a name="rest_code_738db320c0ae413395675637fa632467-1"></a>wget http://nginx.org/download/nginx-0.8.54.tar.gz
+<a name="rest_code_738db320c0ae413395675637fa632467-2"></a>tar zxvf  nginx-0.8.54.tar.gz
+<a name="rest_code_738db320c0ae413395675637fa632467-3"></a>./configure --user<span class="o">=</span>nobody
+<a name="rest_code_738db320c0ae413395675637fa632467-4"></a>  --group<span class="o">=</span>nobody
+<a name="rest_code_738db320c0ae413395675637fa632467-5"></a>  --prefix<span class="o">=</span>/usr/local/nginx
+<a name="rest_code_738db320c0ae413395675637fa632467-6"></a>  --with-http_ssl_module
+<a name="rest_code_738db320c0ae413395675637fa632467-7"></a>  --http-log-path<span class="o">=</span>/var/log/nginx/access.log
+<a name="rest_code_738db320c0ae413395675637fa632467-8"></a>  --with-http_gzip_static_module
+<a name="rest_code_738db320c0ae413395675637fa632467-9"></a>make<span class="o">&amp;&amp;</span>make install
+</pre>
+<p>下面来安装uwsgi</p>
+<pre class="code bash"><a name="rest_code_be0155b53749487f89633db8d7375f59-1"></a>wget http://projects.unbit.it/downloads/uwsgi-0.9.6.5.tar.gz
+<a name="rest_code_be0155b53749487f89633db8d7375f59-2"></a>tar zvxf uwsgi-0.9.6.5.tar.gz
+<a name="rest_code_be0155b53749487f89633db8d7375f59-3"></a><span class="nb">cd</span> uwsgi-0.9.6.5
+<a name="rest_code_be0155b53749487f89633db8d7375f59-4"></a>make -f Makefile.Py26
+<a name="rest_code_be0155b53749487f89633db8d7375f59-5"></a>cp uwsgi /usr/sbin/uwsgi    <span class="c1">#将uwsgi放到PATH下</span>
+</pre>
+<p>下面来说说怎么配置：
+新建一个uwsgi.xml的文件放到django的目录下</p>
+<pre class="code xml"><a name="rest_code_61a51a581e41493abf64d23605fe0aa1-1"></a>#cat uwsgi.xml
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-2"></a><span class="nt">&lt;uwsgi&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-3"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-4"></a><span class="nt">&lt;socket&gt;</span>0.0.0.0:8000<span class="nt">&lt;/socket&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-5"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-6"></a><span class="nt">&lt;listen&gt;</span>204800<span class="nt">&lt;/listen&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-7"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-8"></a><span class="c">&lt;!-- 开启32个线程 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-9"></a><span class="nt">&lt;processes&gt;</span>32<span class="nt">&lt;/processes&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-10"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-11"></a><span class="nt">&lt;max-requests&gt;</span>2048000<span class="nt">&lt;/max-requests&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-12"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-13"></a><span class="nt">&lt;buffer-size&gt;</span>8192<span class="nt">&lt;/buffer-size&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-14"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-15"></a><span class="c">&lt;!-- 你的配置文件 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-16"></a><span class="nt">&lt;module&gt;</span>django_wsgi<span class="nt">&lt;/module&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-17"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-18"></a><span class="nt">&lt;profiler&gt;</span>true<span class="nt">&lt;/profiler&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-19"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-20"></a><span class="nt">&lt;enable-threads&gt;</span>true<span class="nt">&lt;/enable-threads&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-21"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-22"></a><span class="c">&lt;!-- 限制内存空间256M --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-23"></a><span class="nt">&lt;limit-as&gt;</span>256<span class="nt">&lt;/limit-as&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-24"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-25"></a><span class="c">&lt;!-- 使用async模式来运行，这里要注意一下，如果你的app的是no-async-friendly 那就不要用这个模式 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-26"></a><span class="nt">&lt;async&gt;</span>10<span class="nt">&lt;/async&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-27"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-28"></a><span class="nt">&lt;disable-logging/&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-29"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-30"></a><span class="nt">&lt;daemonize&gt;</span>/home/app01/uwsgi.log<span class="nt">&lt;/daemonize&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-31"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-32"></a><span class="nt">&lt;/uwsgi&gt;</span>
+</pre>
+<pre class="code python"><a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-1"></a><span class="c1">#cat django_wsgi.py</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-2"></a><span class="kn">import</span> <span class="nn">os</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-3"></a><span class="kn">import</span> <span class="nn">django.core.handlers.wsgi</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-4"></a><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'DJANGO_SETTINGS_MODULE'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'your settings'</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-5"></a><span class="n">application</span> <span class="o">=</span> <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIHandler</span><span class="p">()</span>
+</pre>
+<p>下面是nginx的配置：</p>
+<pre class="code bash"><a name="rest_code_d19a720ecd6b45bbb10079384e21579f-1"></a>server <span class="o">{</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-2"></a>        listen   <span class="m">80</span><span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-3"></a>        server_name jasonwu.me<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-4"></a>        access_log /var/log/jasownu.me/access_log<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-5"></a>        location / <span class="o">{</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-6"></a>            root   /home/app01/<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-7"></a>            uwsgi_pass <span class="m">127</span>.0.0.1:8000<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-8"></a>            include        uwsgi_params<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-9"></a>      <span class="o">}</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-10"></a>  <span class="o">}</span>
+</pre>
+<p>启动服务：</p>
+<pre class="code bash"><a name="rest_code_61b576c2543246e9a4a9301ce0570246-1"></a>/usr/bin/uwsgi -x /home/app01/uwsgi.xml
+<a name="rest_code_61b576c2543246e9a4a9301ce0570246-2"></a>/usr/local/nginx/sbin/nginx
+</pre>
+<p>这样部署完成了</p>
+<p>下面来说说遇到的一个问题，不知道大家有没有遇到，
+在我们启动uwsgi后在uwsgi的日志中会出现如下的信息:</p>
+<pre class="literal-block">
+– unavailable modifier requested: 1 –
+– unavailable modifier requested: 1 –
+</pre>
+<p>表现的现象就是启动一段时间没法访问app，在查看uwsgi的源代码中我们找到打印这部份日志的段落，正常情况下应该返回的-1，目前还在查找这个出现这个错误的原因。</p>
+<p><strong>参考文档:</strong></p>
+<ul class="simple">
+<li>uwsgi的 <a class="reference external" href="http://projects.unbit.it/uwsgi/wiki/TitleIndex">官方wiki</a>
+</li>
+<li><a class="reference external" href="http://www.nightmare.com/medusa/programming.html">Programming in Python with Medusa and the Async Sockets Library</a></li>
+</ul>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/django/" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../categories/nginx/" rel="tag">nginx</a></li>
+            <li><a class="tag p-category" href="../../categories/uwsgi/" rel="tag">uwsgi</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../the_unp_reading_notes_io_model/" rel="prev" title="unp读书笔记（第六章I/O模型）">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../begin_tinkerer/" rel="next" title="博客迁移到tinkerer">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/use_nginx_uwsgi_deploy_django/",
+        disqus_title="\u4f7f\u7528NGINX+UWSGI\u6765\u90e8\u7f72Django",
+        disqus_identifier="cache/posts/use_nginx_uwsgi_deploy_django.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

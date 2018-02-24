@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>"web安全技术沙龙"一些感想 | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/some-thoughts-about-web-security-technology-salon/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../dns-security-preventive-measures/" title="DNS安全和预防措施" type="text/html">
+<link rel="next" href="../welcome-to-nikola/" title="Welcome to Nikola" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content='"web安全技术沙龙"一些感想'>
+<meta property="og:url" content="https://vimer.im/posts/some-thoughts-about-web-security-technology-salon/">
+<meta property="og:description" content="昨天在中科院软件所参加了spark组织的安全技术沙龙的会议，参加这个沙龙，我的第一个收获应该是见着了spark的真人了，真人比人人网上的照片要帅多了。嘿嘿…
+下面来说说安全沙龙上的一些内容吧，昨天cnbird讲的安全运维的内容我是非常感兴趣的，主要讲了两个案例，一个是nfs对公网开放，一个squid的acl没配置好，这两个应该都是管理员的疏忽造成的，很容易进行修复，如何去避免这些疏忽呢，我们系统管">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2011-10-31T20:17:59+08:00">
+<meta property="article:tag" content="security">
+<meta property="article:tag" content="sql-injection">
+<meta property="article:tag" content="xss">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">"web安全技术沙龙"一些感想</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2011-10-31T20:17:59+08:00" itemprop="datePublished" title="2011-10-31 20:17">2011-10-31 20:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/some-thoughts-about-web-security-technology-salon.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>昨天在中科院软件所参加了spark组织的安全技术沙龙的会议，参加这个沙龙，我的第一个收获应该是见着了spark的真人了，真人比人人网上的照片要帅多了。嘿嘿…</p>
+<p>下面来说说安全沙龙上的一些内容吧，昨天cnbird讲的安全运维的内容我是非常感兴趣的，主要讲了两个案例，一个是nfs对公网开放，一个squid的acl没配置好，这两个应该都是管理员的疏忽造成的，很容易进行修复，如何去避免这些疏忽呢，我们系统管理员，应该也可以做做相关的工作，比如拿着nmap自己扫扫，看看有没有多余的端口暴露在外网，平时多关注操作系统，服务器软件方面的一些漏洞（0day信息），去年5月份的时候80sec爆出nginx文件类型错误解析漏洞，这个漏洞大致是nginx默认情况下可能导致服务器错误的将任何类型的文件以PHP的方式进行解析，这使得攻击者可能攻陷支持php的nginx服务器。这个漏洞爆出后，有很多反应不及时的管理员的论坛被黑客拿到了webshell，据说当当网的论坛也被黑掉了。</p>
+<p>上面说的主要是运维安全，光服务器配置，防火墙配好了，这些还不够，很多的的安全问题是由应用造成的，下面再来说说昨天会上讲的一些应用安全方面的内容，主要讲的关于XSS方面的东西，XSS漏洞很常见，解决起来也非常简单，就是转义，在写网站上，我们应该遵循，用户的一切输入都不可信，都要进行转义，这个问题，其实一些成熟的web开发框架内置了很好的解决方案，比如我比较熟悉的django，它默认会对用户所有的输入内容进行转义，并且一般在使用django开发网站时，在开发过程中我们一般使用ORM来对数据库进行操作，这样可以有效避免sql注入攻击，还有对于目录遍历漏洞，django内置的静态内容视图会对../../这样输入进行转义，更进一步来说django的url配置文件，如果我们没在urlconf中进行相应的配置，那么我们也是没法进行访问。昨天在沙龙上来自新浪的cy07说的很好，根据refer来防范XSS，保证两次refer一致才允许访问，避免用户的cookie被盗。</p>
+<p>最后再说说安全制度，体系，流程的问题，大部分的公司一般都是在出了问题之后才开始重视这些问题，非常的被动，不是主动的去做安全，做安全的话，需要自上而下进行推动，因此需要相应的制度，体系，流程，一般我们做技术的对于这些东西都是比较反感，感觉被这些东西束缚住了手脚，可以这样去想一下，如果一个流程能减少安全问题，那么我们就可以少花一点时间再出事以后修修补补。好了，就写这么多吧，有点小的建议，web安全沙龙可以讲讲一些网络安全方面的东西，比如ddos防范之类的内容，希望web安全技术沙龙能越办越火。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/security/" rel="tag">security</a></li>
+            <li><a class="tag p-category" href="../../categories/sql-injection/" rel="tag">sql-injection</a></li>
+            <li><a class="tag p-category" href="../../categories/xss/" rel="tag">xss</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../dns-security-preventive-measures/" rel="prev" title="DNS安全和预防措施">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../welcome-to-nikola/" rel="next" title="Welcome to Nikola">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/some-thoughts-about-web-security-technology-salon/",
+        disqus_title="\"web\u5b89\u5168\u6280\u672f\u6c99\u9f99\"\u4e00\u4e9b\u611f\u60f3",
+        disqus_identifier="cache/posts/some-thoughts-about-web-security-technology-salon.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

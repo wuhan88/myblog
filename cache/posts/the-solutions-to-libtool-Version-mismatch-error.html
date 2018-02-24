@@ -1,0 +1,11 @@
+<pre class="code bash"><a name="rest_code_e45959ac13bf42ffa62ef4090f640934-1"></a>libtool: Version mismatch error.  This is libtool <span class="m">2</span>.2.6b Debian-2.2.6b-2ubuntu1,
+<a name="rest_code_e45959ac13bf42ffa62ef4090f640934-2"></a>but the
+<a name="rest_code_e45959ac13bf42ffa62ef4090f640934-3"></a>libtool: definition of this LT_INIT comes from an older release.
+<a name="rest_code_e45959ac13bf42ffa62ef4090f640934-4"></a>libtool: You should recreate aclocal.m4 with macros from libtool <span class="m">2</span>.2.6b
+<a name="rest_code_e45959ac13bf42ffa62ef4090f640934-5"></a>Debian-2.2.6b-2ubuntu1
+<a name="rest_code_e45959ac13bf42ffa62ef4090f640934-6"></a>libtool: and run autoconf again.
+</pre><p>这个是执行rpmbuild中的报错信息，解决方案很简单，删除包里的aclocal.m4，然后执行 aclocal 和 autoconf</p>
+<pre class="code bash"><a name="rest_code_d44ab682fef549ffac5b6534aa70af87-1"></a>rm aclocal.m4 <span class="p">&amp;</span> aclocal <span class="p">&amp;</span> autoconf
+</pre><p>最后再重新rpmbuild -bb一下就可以了</p>
+<pre class="code bash"><a name="rest_code_e643f070e9954e879e4b4153f3074a2c-1"></a>rpmbuild -bb *.spec
+</pre>

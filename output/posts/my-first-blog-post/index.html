@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>将博客从wordpress迁移到django | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/my-first-blog-post/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel/" title="VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel" type="text/html">
+<link rel="next" href="../YAHOO-WEB-OPTIME-14-rules/" title="YAHOO WEB OPTIME 14 rules" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="将博客从wordpress迁移到django">
+<meta property="og:url" content="https://vimer.im/posts/my-first-blog-post/">
+<meta property="og:description" content="最近一段时间，自己在网上发现已经有很多基于django的博客系统，因为自己对于django比较熟悉，可以修改博客的程序的代码，因此，打算将博客从wordpress迁移到django，这里我选择了一个基于GAE的django博客系统，我自己checkout代码后，部署到本地进行测试，发现这个博客系统还有很多bug，自己这段时间修复了一些重要的bug，又重新买了个vps，使用uwsgi+nginx重新">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2011-05-29T19:17:59+08:00">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="git">
+<meta property="article:tag" content="hg">
+<meta property="article:tag" content="sqlite">
+<meta property="article:tag" content="svn">
+<meta property="article:tag" content="wordpress">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">将博客从wordpress迁移到django</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2011-05-29T19:17:59+08:00" itemprop="datePublished" title="2011-05-29 19:17">2011-05-29 19:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/my-first-blog-post.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>最近一段时间，自己在网上发现已经有很多基于django的博客系统，因为自己对于django比较熟悉，可以修改博客的程序的代码，因此，打算将博客从wordpress迁移到django，这里我选择了一个基于GAE的django博客系统，我自己checkout代码后，部署到本地进行测试，发现这个博客系统还有很多bug，自己这段时间修复了一些重要的bug，又重新买了个vps，使用uwsgi+nginx重新弄了个博客，目前使用上还算很不错的，这个修改后的博客系统的代码我放到了自己的bitbucket上。</p>
+<p>下面来说说折腾过程中的收获吧，1，对于像vps这样的环境用sqlite很不错，sqlite简单介绍下，是一款轻型的数据库，它的设计目标是嵌入式的，它占用资源非常的低，在嵌入式设备中，可能只需要几百K的内存就够了，同时他能跟很多程序语言结合，python对sqlite的支持非常好，比起Mysql、PostgreSQL这两款开源世界著名的数据库管理系统来讲，它的处理速度比他们都快。博客对数据库的要求很简单，只要能存储我的文章就OK了，处理速度越快越好，其它的那些高级特性对于博客来说都是摆设，使用sqlite还有一个好处，方便备份，只要将sqlite的文件拷回本地就行了。</p>
+<p>2，说说版本控制，这段时间为了托管这些代码，我对svn,git,hg这三个版本控制软件进行了评估，最后我用了hg进行版本控制，说说为什么使用hg,第一，我需要离线的版本控制，就是我能在离线时也能commit改动，svn在第一轮出局，第二轮是git和hg,其实我最先开始用的git，毕竟git是linux内核开发的版本控制工具，并且github也挺好用，因此用github托管代码，感觉也蛮不错，直到我发现了bitbucket，bitbucket网站的界面可能做的没github好，但两个的功能上都差不多，但bitbucket免费用户能创建私有库，这点对我来说吸引力还是非常大的，因此我决定折腾hg，然后自己安装好Mercurial后，因为用过git，因此使用起来的也没遇到多大的问题，因此选定了hg作为版本控制工具，大家如果和我一样纠结于选版本控制工具时可以考虑下hg，googlecode也支持使用hg进行版本控制，如果你使用windows的话，hg的windows下的客户端也比git要好。</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/django/" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../categories/git/" rel="tag">git</a></li>
+            <li><a class="tag p-category" href="../../categories/hg/" rel="tag">hg</a></li>
+            <li><a class="tag p-category" href="../../categories/sqlite/" rel="tag">sqlite</a></li>
+            <li><a class="tag p-category" href="../../categories/svn/" rel="tag">svn</a></li>
+            <li><a class="tag p-category" href="../../categories/wordpress/" rel="tag">wordpress</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel/" rel="prev" title="VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../YAHOO-WEB-OPTIME-14-rules/" rel="next" title="YAHOO WEB OPTIME 14 rules">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/my-first-blog-post/",
+        disqus_title="\u5c06\u535a\u5ba2\u4ecewordpress\u8fc1\u79fb\u5230django",
+        disqus_identifier="cache/posts/my-first-blog-post.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

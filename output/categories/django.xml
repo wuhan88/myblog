@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Jason Wu's Thoughts and Writings (文章分类：django)</title><link>https://vimer.im/</link><description></description><atom:link rel="self" type="application/rss+xml" href="https://vimer.im/categories/django.xml"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:13:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>使用NGINX+UWSGI来部署Django</title><link>https://vimer.im/posts/use_nginx_uwsgi_deploy_django/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;关于UWSGI的介绍不多说了，想了解的可以自己去搜，uwsgi性能还蛮不错，我们之前使用的fastcgi方式来跑django，前端用F5做负载均衡，用户数增加后服务器的load很高，但换uwsgi服务器的load下降不少，废话不多说，进入正题。
+编译安装nginx，用的nginx-0.8.54，目前最新的stable版本&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_738db320c0ae413395675637fa632467-1"&gt;&lt;/a&gt;wget http://nginx.org/download/nginx-0.8.54.tar.gz
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-2"&gt;&lt;/a&gt;tar zxvf  nginx-0.8.54.tar.gz
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-3"&gt;&lt;/a&gt;./configure --user&lt;span class="o"&gt;=&lt;/span&gt;nobody
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-4"&gt;&lt;/a&gt;  --group&lt;span class="o"&gt;=&lt;/span&gt;nobody
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-5"&gt;&lt;/a&gt;  --prefix&lt;span class="o"&gt;=&lt;/span&gt;/usr/local/nginx
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-6"&gt;&lt;/a&gt;  --with-http_ssl_module
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-7"&gt;&lt;/a&gt;  --http-log-path&lt;span class="o"&gt;=&lt;/span&gt;/var/log/nginx/access.log
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-8"&gt;&lt;/a&gt;  --with-http_gzip_static_module
+&lt;a name="rest_code_738db320c0ae413395675637fa632467-9"&gt;&lt;/a&gt;make&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;make install
+&lt;/pre&gt;&lt;p&gt;下面来安装uwsgi&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-1"&gt;&lt;/a&gt;wget http://projects.unbit.it/downloads/uwsgi-0.9.6.5.tar.gz
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-2"&gt;&lt;/a&gt;tar zvxf uwsgi-0.9.6.5.tar.gz
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-3"&gt;&lt;/a&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; uwsgi-0.9.6.5
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-4"&gt;&lt;/a&gt;make -f Makefile.Py26
+&lt;a name="rest_code_be0155b53749487f89633db8d7375f59-5"&gt;&lt;/a&gt;cp uwsgi /usr/sbin/uwsgi    &lt;span class="c1"&gt;#将uwsgi放到PATH下&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面来说说怎么配置：
+新建一个uwsgi.xml的文件放到django的目录下&lt;/p&gt;
+&lt;pre class="code xml"&gt;&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-1"&gt;&lt;/a&gt;#cat uwsgi.xml
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-2"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;uwsgi&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-3"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-4"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;socket&amp;gt;&lt;/span&gt;0.0.0.0:8000&lt;span class="nt"&gt;&amp;lt;/socket&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-5"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-6"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;listen&amp;gt;&lt;/span&gt;204800&lt;span class="nt"&gt;&amp;lt;/listen&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-7"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-8"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 开启32个线程 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-9"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;processes&amp;gt;&lt;/span&gt;32&lt;span class="nt"&gt;&amp;lt;/processes&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-10"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-11"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;max-requests&amp;gt;&lt;/span&gt;2048000&lt;span class="nt"&gt;&amp;lt;/max-requests&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-12"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-13"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;buffer-size&amp;gt;&lt;/span&gt;8192&lt;span class="nt"&gt;&amp;lt;/buffer-size&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-14"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-15"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 你的配置文件 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-16"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;django_wsgi&lt;span class="nt"&gt;&amp;lt;/module&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-17"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-18"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;profiler&amp;gt;&lt;/span&gt;true&lt;span class="nt"&gt;&amp;lt;/profiler&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-19"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-20"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;enable-threads&amp;gt;&lt;/span&gt;true&lt;span class="nt"&gt;&amp;lt;/enable-threads&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-21"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-22"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 限制内存空间256M --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-23"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;limit-as&amp;gt;&lt;/span&gt;256&lt;span class="nt"&gt;&amp;lt;/limit-as&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-24"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-25"&gt;&lt;/a&gt;&lt;span class="c"&gt;&amp;lt;!-- 使用async模式来运行，这里要注意一下，如果你的app的是no-async-friendly 那就不要用这个模式 --&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-26"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;async&amp;gt;&lt;/span&gt;10&lt;span class="nt"&gt;&amp;lt;/async&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-27"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-28"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;disable-logging/&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-29"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-30"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;daemonize&amp;gt;&lt;/span&gt;/home/app01/uwsgi.log&lt;span class="nt"&gt;&amp;lt;/daemonize&amp;gt;&lt;/span&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-31"&gt;&lt;/a&gt;
+&lt;a name="rest_code_61a51a581e41493abf64d23605fe0aa1-32"&gt;&lt;/a&gt;&lt;span class="nt"&gt;&amp;lt;/uwsgi&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;pre class="code python"&gt;&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-1"&gt;&lt;/a&gt;&lt;span class="c1"&gt;#cat django_wsgi.py&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-2"&gt;&lt;/a&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-3"&gt;&lt;/a&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;django.core.handlers.wsgi&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-4"&gt;&lt;/a&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;environ&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'DJANGO_SETTINGS_MODULE'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'your settings'&lt;/span&gt;
+&lt;a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-5"&gt;&lt;/a&gt;&lt;span class="n"&gt;application&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;core&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;handlers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIHandler&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面是nginx的配置：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-1"&gt;&lt;/a&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-2"&gt;&lt;/a&gt;        listen   &lt;span class="m"&gt;80&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-3"&gt;&lt;/a&gt;        server_name jasonwu.me&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-4"&gt;&lt;/a&gt;        access_log /var/log/jasownu.me/access_log&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-5"&gt;&lt;/a&gt;        location / &lt;span class="o"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-6"&gt;&lt;/a&gt;            root   /home/app01/&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-7"&gt;&lt;/a&gt;            uwsgi_pass &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1:8000&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-8"&gt;&lt;/a&gt;            include        uwsgi_params&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-9"&gt;&lt;/a&gt;      &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;a name="rest_code_d19a720ecd6b45bbb10079384e21579f-10"&gt;&lt;/a&gt;  &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;启动服务：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_61b576c2543246e9a4a9301ce0570246-1"&gt;&lt;/a&gt;/usr/bin/uwsgi -x /home/app01/uwsgi.xml
+&lt;a name="rest_code_61b576c2543246e9a4a9301ce0570246-2"&gt;&lt;/a&gt;/usr/local/nginx/sbin/nginx
+&lt;/pre&gt;&lt;p&gt;这样部署完成了&lt;/p&gt;
+&lt;p&gt;下面来说说遇到的一个问题，不知道大家有没有遇到，
+在我们启动uwsgi后在uwsgi的日志中会出现如下的信息:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+– unavailable modifier requested: 1 –
+– unavailable modifier requested: 1 –
+&lt;/pre&gt;
+&lt;p&gt;表现的现象就是启动一段时间没法访问app，在查看uwsgi的源代码中我们找到打印这部份日志的段落，正常情况下应该返回的-1，目前还在查找这个出现这个错误的原因。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参考文档:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;uwsgi的 &lt;a class="reference external" href="http://projects.unbit.it/uwsgi/wiki/TitleIndex"&gt;官方wiki&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.nightmare.com/medusa/programming.html"&gt;Programming in Python with Medusa and the Async Sockets Library&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>django</category><category>nginx</category><category>uwsgi</category><guid>https://vimer.im/posts/use_nginx_uwsgi_deploy_django/</guid><pubDate>Wed, 12 Dec 2012 12:17:59 GMT</pubDate></item><item><title>将博客从wordpress迁移到django</title><link>https://vimer.im/posts/my-first-blog-post/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;最近一段时间，自己在网上发现已经有很多基于django的博客系统，因为自己对于django比较熟悉，可以修改博客的程序的代码，因此，打算将博客从wordpress迁移到django，这里我选择了一个基于GAE的django博客系统，我自己checkout代码后，部署到本地进行测试，发现这个博客系统还有很多bug，自己这段时间修复了一些重要的bug，又重新买了个vps，使用uwsgi+nginx重新弄了个博客，目前使用上还算很不错的，这个修改后的博客系统的代码我放到了自己的bitbucket上。&lt;/p&gt;
+&lt;p&gt;下面来说说折腾过程中的收获吧，1，对于像vps这样的环境用sqlite很不错，sqlite简单介绍下，是一款轻型的数据库，它的设计目标是嵌入式的，它占用资源非常的低，在嵌入式设备中，可能只需要几百K的内存就够了，同时他能跟很多程序语言结合，python对sqlite的支持非常好，比起Mysql、PostgreSQL这两款开源世界著名的数据库管理系统来讲，它的处理速度比他们都快。博客对数据库的要求很简单，只要能存储我的文章就OK了，处理速度越快越好，其它的那些高级特性对于博客来说都是摆设，使用sqlite还有一个好处，方便备份，只要将sqlite的文件拷回本地就行了。&lt;/p&gt;
+&lt;p&gt;2，说说版本控制，这段时间为了托管这些代码，我对svn,git,hg这三个版本控制软件进行了评估，最后我用了hg进行版本控制，说说为什么使用hg,第一，我需要离线的版本控制，就是我能在离线时也能commit改动，svn在第一轮出局，第二轮是git和hg,其实我最先开始用的git，毕竟git是linux内核开发的版本控制工具，并且github也挺好用，因此用github托管代码，感觉也蛮不错，直到我发现了bitbucket，bitbucket网站的界面可能做的没github好，但两个的功能上都差不多，但bitbucket免费用户能创建私有库，这点对我来说吸引力还是非常大的，因此我决定折腾hg，然后自己安装好Mercurial后，因为用过git，因此使用起来的也没遇到多大的问题，因此选定了hg作为版本控制工具，大家如果和我一样纠结于选版本控制工具时可以考虑下hg，googlecode也支持使用hg进行版本控制，如果你使用windows的话，hg的windows下的客户端也比git要好。&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>git</category><category>hg</category><category>sqlite</category><category>svn</category><category>wordpress</category><guid>https://vimer.im/posts/my-first-blog-post/</guid><pubDate>Sun, 29 May 2011 11:17:59 GMT</pubDate></item></channel></rss>

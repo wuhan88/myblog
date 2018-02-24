@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python : 什么是*args和**kwargs？ | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/args_and_kwargs_in_python/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../introduce_to_python_lambda/" title="python的lambda函数介绍" type="text/html">
+<link rel="next" href="../the_unp_reading_notes_io_model/" title="unp读书笔记（第六章I/O模型）" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="Python : 什么是*args和**kwargs？">
+<meta property="og:url" content="https://vimer.im/posts/args_and_kwargs_in_python/">
+<meta property="og:description" content="def foo(*args, **kwargs):
+    print 'args = ', args
+    print 'kwargs = ', kwargs
+    print '---------------------------------------'
+if __name__ == '__main__':
+    foo(1,2,3,4)
+    foo(a=1,b=2,c=3)
+ ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2012-12-03T20:17:59+08:00">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Python : 什么是*args和**kwargs？</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    <a href="../../authors/jasonwu/">JasonWu</a>
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2012-12-03T20:17:59+08:00" itemprop="datePublished" title="2012-12-03 20:17">2012-12-03 20:17</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/args_and_kwargs_in_python.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<pre class="code python"><a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-1"></a><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-2"></a>    <span class="k">print</span> <span class="s1">'args = '</span><span class="p">,</span> <span class="n">args</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-3"></a>    <span class="k">print</span> <span class="s1">'kwargs = '</span><span class="p">,</span> <span class="n">kwargs</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-4"></a>    <span class="k">print</span> <span class="s1">'---------------------------------------'</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-5"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-6"></a>    <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-7"></a>    <span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-8"></a>    <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-9"></a>    <span class="n">foo</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="s1">'2'</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre>
+<p>输出结果如下：</p>
+<pre class="literal-block">
+| args = (1, 2, 3, 4)
+| kwargs = {}
+| ---------------------------------------
+| args = ()
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = (1, 2, 3, 4)
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = ('a', 1, None)
+| kwargs = {'a': 1, 'c': 3, 'b': '2'}
+| ---------------------------------------
+</pre>
+<p>可以看到，这两个是python中的可变参数。 <tt class="docutils literal">*args</tt> 表示任何多个无名参数，它是一个tuple； <tt class="docutils literal">**kwargs</tt> 表示关键字参数，它是一个dict。并且同时使用 <tt class="docutils literal">*args</tt> 和 <tt class="docutils literal">**kwargs</tt> 时，必须 <tt class="docutils literal">*args</tt> 参数列要在 <tt class="docutils literal">**kwargs</tt> 前，像foo(a=1, b='2', c=3, a', 1, None, )这样调用的话，会提示语法错误“SyntaxError: non-keyword arg after keyword arg”。</p>
+<p>呵呵，知道 <tt class="docutils literal">*args</tt> 和 <tt class="docutils literal">**kwargs</tt> 是什么了吧。还有一个很漂亮的用法，就是创建字典：</p>
+<pre class="code python"><a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-1"></a><span class="k">def</span> <span class="nf">kw_dict</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-2"></a>    <span class="k">return</span> <span class="n">kwargs</span>
+<a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-3"></a>    <span class="k">print</span> <span class="n">kw_dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+</pre>
+<p>其实python中就带有dict类，使用dict(a=1,b=2,c=3)即可创建一个字典了。</p>
+<p>另:连接两个字典的方法:</p>
+<p>第一种:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; a={'a':'a','b':'b'}
+&gt;&gt;&gt; m=dict(c='c',**a)
+&gt;&gt;&gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&gt;&gt;&gt;
+</pre>
+<p>第二种:</p>
+<pre class="doctest-block">
+&gt;&gt;&gt; a={'a':'a','b':'b'}
+&gt;&gt;&gt; m={'c':'c'}
+&gt;&gt;&gt; m.update(a)
+&gt;&gt;&gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+</pre>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/python/" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../introduce_to_python_lambda/" rel="prev" title="python的lambda函数介绍">前一篇</a>
+            </li>
+            <li class="next">
+                <a href="../the_unp_reading_notes_io_model/" rel="next" title="unp读书笔记（第六章I/O模型）">后一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/args_and_kwargs_in_python/",
+        disqus_title="Python : \u4ec0\u4e48\u662f*args\u548c**kwargs\uff1f",
+        disqus_identifier="cache/posts/args_and_kwargs_in_python.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

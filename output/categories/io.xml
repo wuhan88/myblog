@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Jason Wu's Thoughts and Writings (文章分类：I/O)</title><link>https://vimer.im/</link><description></description><atom:link rel="self" type="application/rss+xml" href="https://vimer.im/categories/io.xml"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:13:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>unp读书笔记（第六章I/O模型）</title><link>https://vimer.im/posts/the_unp_reading_notes_io_model/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;在看了unp后才发现自己之前的认识一直都是错误的，把阻塞I/O，非阻塞I/O，同步和异步混为一谈，之前一直觉得异步就是非阻塞io，同步就是阻塞io，主要搞清楚了，五种I/O模型的实现，以及epoll并不是aio，这两个并不是一个东西。&lt;/p&gt;
+&lt;p&gt;实际上unix有五种I/O模型：&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;阻塞I/O&lt;/li&gt;
+&lt;li&gt;非阻塞I/O&lt;/li&gt;
+&lt;li&gt;I/O复用(select和poll)&lt;/li&gt;
+&lt;li&gt;信号驱动I/O（SIGIO)&lt;/li&gt;
+&lt;li&gt;异步I/O&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一个输入操作一般有两个不同的阶段：
+1. 等待数据准备好
+2. 从内核到进程拷贝数据
+对于一个套接口上的输入操作，第一步一般是等待数据到达网络，当分组到达时，它被拷贝到内核中的某个缓冲区，第二步是将数据从内核缓冲区拷贝到应用缓冲区。&lt;/p&gt;
+&lt;div class="section" id="i-o"&gt;
+&lt;h2&gt;1.阻塞I/O模型&lt;/h2&gt;
+&lt;p&gt;最流行的I/O模型是阻塞I/O模型，缺省时，所有套接口都是阻塞的。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" src="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;2. 非阻塞I/O模型&lt;/h2&gt;
+&lt;p&gt;前三次调用recvfrom时仍无数据返回，因此内核立即返回一个EWOULDBLOCK错误。第四次调用recvfrom时，数据已经准备好，被拷贝到应用缓冲区，recvfrom返回成功指示，接着就是我们处理数据。当一个应用进程像这样对一个非阻塞描述字循环调用recvfrom时，我们称此过程为轮询(polling)。应用进程连续不断地查询内核，看看某操作是否准备好，这对cpu时间是极大的浪费，但这种模型只是偶尔才遇到，一般是在只专门提供某种功能的系统中才有。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" src="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;3. I/O复用模型&lt;/h2&gt;
+&lt;p&gt;有了I/O复用，我们就可以调用select或poll，在这两个系统调用中的某一个上阻塞，而不是阻塞于真正的I/O系统调用。如图6.3，我们阻塞于select调用，等待数据报套接口可读。当select返回套接口可读条件时，我们调用recvfrom将数据报拷贝到应用缓冲区中。使用select的好处在于我们可以等待多个描述字准备好。&lt;/p&gt;
+&lt;img alt="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" src="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h2&gt;4. 信号驱动I/O模型&lt;/h2&gt;
+&lt;p&gt;我们也可以用信号，让内核在描述字准备好时，用信号SIGIO通知我们，我们将此方法称为信号驱动I/O，如图6.4
+首先我们允许套接口进行信号驱动IO，并通过系统调用sigaction安装一个信号处理程序。此系统调用立即返回，进程继续工作，它是非阻塞的。当数据报准备好被读时，就为该进程生成一个SIGIO信号。我们随即可以在信号处理程序中调用recvfrom来读数据报，并通知主循环数据已准备好被处理。也可以通知主循环，让它来读数据报。无论我们如何处理SIGIO信号，这种模型的好处是当等待数据报到达时，可以不阻塞。主循环可以继续执行，只是等待信号处理程序的通知,或者数据已准备好处理，或者数据报已准备好被读。&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" src="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;5. 异步I/O模型&lt;/h2&gt;
+&lt;p&gt;异步IO是POSIX实时扩展，我们让内核启动操作，并在整个操作完成后(包括将数据从内核拷贝到我们自己的缓冲区)通知我们。这种模型没有广泛使用。这种模型与前一节介绍的信号驱动模型的主要区别在于：信号驱动I/O是由内核通知我们何时可以启动一个I/O操作，而异步I/O模型是由内核通知我们I/O操作何时完成。我们调用函数aio_read(POSIX异步I/O函数以aio_或者lio_开头)，给内核传递描述字，缓冲区指针，缓冲区大小(与read相同的三个参数)，文件偏移(与lseek类似)，并告诉内核当前整个操作完成是如何通知我们。此系统调用立即返回，我们的进程不阻塞于等待I/O操作的完成。在此例子中，我们假设要求内核在操作完成时生成一个信号，此信号直到数据已拷贝到应用缓冲区才生成，这一点是与信号驱动I/O模型不同的。&lt;/p&gt;
+&lt;img alt="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" src="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h2&gt;6. 五种不同I/O模型的比较&lt;/h2&gt;
+&lt;img alt="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" src="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" style="width: 600px;"&gt;
+&lt;/div&gt;
+&lt;div class="section" id="i-oi-o"&gt;
+&lt;h2&gt;7. 同步I/O与异步I/O&lt;/h2&gt;
+&lt;p&gt;POSIX定义这两个术语如下：
+同步I/O操作引起请求进程阻塞，直到I/O操作完成。
+异步I/O操作不引起请求进程阻塞。
+根据上述定义，我们的前四个模型--阻塞I/O模型，非阻塞I/O模型，I/O复用模型和信号驱动I/O模型都是同步I/O模型，因为真正的I/O操作(recvfrom)阻塞进程，只有异步I/O模型与异步I/O的定义相匹配。&lt;/p&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>I/O</category><category>unp</category><guid>https://vimer.im/posts/the_unp_reading_notes_io_model/</guid><pubDate>Tue, 04 Dec 2012 12:17:59 GMT</pubDate></item></channel></rss>

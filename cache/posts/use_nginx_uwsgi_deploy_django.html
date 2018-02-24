@@ -1,0 +1,83 @@
+<p>关于UWSGI的介绍不多说了，想了解的可以自己去搜，uwsgi性能还蛮不错，我们之前使用的fastcgi方式来跑django，前端用F5做负载均衡，用户数增加后服务器的load很高，但换uwsgi服务器的load下降不少，废话不多说，进入正题。
+编译安装nginx，用的nginx-0.8.54，目前最新的stable版本</p>
+<pre class="code bash"><a name="rest_code_738db320c0ae413395675637fa632467-1"></a>wget http://nginx.org/download/nginx-0.8.54.tar.gz
+<a name="rest_code_738db320c0ae413395675637fa632467-2"></a>tar zxvf  nginx-0.8.54.tar.gz
+<a name="rest_code_738db320c0ae413395675637fa632467-3"></a>./configure --user<span class="o">=</span>nobody
+<a name="rest_code_738db320c0ae413395675637fa632467-4"></a>  --group<span class="o">=</span>nobody
+<a name="rest_code_738db320c0ae413395675637fa632467-5"></a>  --prefix<span class="o">=</span>/usr/local/nginx
+<a name="rest_code_738db320c0ae413395675637fa632467-6"></a>  --with-http_ssl_module
+<a name="rest_code_738db320c0ae413395675637fa632467-7"></a>  --http-log-path<span class="o">=</span>/var/log/nginx/access.log
+<a name="rest_code_738db320c0ae413395675637fa632467-8"></a>  --with-http_gzip_static_module
+<a name="rest_code_738db320c0ae413395675637fa632467-9"></a>make<span class="o">&amp;&amp;</span>make install
+</pre><p>下面来安装uwsgi</p>
+<pre class="code bash"><a name="rest_code_be0155b53749487f89633db8d7375f59-1"></a>wget http://projects.unbit.it/downloads/uwsgi-0.9.6.5.tar.gz
+<a name="rest_code_be0155b53749487f89633db8d7375f59-2"></a>tar zvxf uwsgi-0.9.6.5.tar.gz
+<a name="rest_code_be0155b53749487f89633db8d7375f59-3"></a><span class="nb">cd</span> uwsgi-0.9.6.5
+<a name="rest_code_be0155b53749487f89633db8d7375f59-4"></a>make -f Makefile.Py26
+<a name="rest_code_be0155b53749487f89633db8d7375f59-5"></a>cp uwsgi /usr/sbin/uwsgi    <span class="c1">#将uwsgi放到PATH下</span>
+</pre><p>下面来说说怎么配置：
+新建一个uwsgi.xml的文件放到django的目录下</p>
+<pre class="code xml"><a name="rest_code_61a51a581e41493abf64d23605fe0aa1-1"></a>#cat uwsgi.xml
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-2"></a><span class="nt">&lt;uwsgi&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-3"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-4"></a><span class="nt">&lt;socket&gt;</span>0.0.0.0:8000<span class="nt">&lt;/socket&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-5"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-6"></a><span class="nt">&lt;listen&gt;</span>204800<span class="nt">&lt;/listen&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-7"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-8"></a><span class="c">&lt;!-- 开启32个线程 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-9"></a><span class="nt">&lt;processes&gt;</span>32<span class="nt">&lt;/processes&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-10"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-11"></a><span class="nt">&lt;max-requests&gt;</span>2048000<span class="nt">&lt;/max-requests&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-12"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-13"></a><span class="nt">&lt;buffer-size&gt;</span>8192<span class="nt">&lt;/buffer-size&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-14"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-15"></a><span class="c">&lt;!-- 你的配置文件 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-16"></a><span class="nt">&lt;module&gt;</span>django_wsgi<span class="nt">&lt;/module&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-17"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-18"></a><span class="nt">&lt;profiler&gt;</span>true<span class="nt">&lt;/profiler&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-19"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-20"></a><span class="nt">&lt;enable-threads&gt;</span>true<span class="nt">&lt;/enable-threads&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-21"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-22"></a><span class="c">&lt;!-- 限制内存空间256M --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-23"></a><span class="nt">&lt;limit-as&gt;</span>256<span class="nt">&lt;/limit-as&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-24"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-25"></a><span class="c">&lt;!-- 使用async模式来运行，这里要注意一下，如果你的app的是no-async-friendly 那就不要用这个模式 --&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-26"></a><span class="nt">&lt;async&gt;</span>10<span class="nt">&lt;/async&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-27"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-28"></a><span class="nt">&lt;disable-logging/&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-29"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-30"></a><span class="nt">&lt;daemonize&gt;</span>/home/app01/uwsgi.log<span class="nt">&lt;/daemonize&gt;</span>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-31"></a>
+<a name="rest_code_61a51a581e41493abf64d23605fe0aa1-32"></a><span class="nt">&lt;/uwsgi&gt;</span>
+</pre><pre class="code python"><a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-1"></a><span class="c1">#cat django_wsgi.py</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-2"></a><span class="kn">import</span> <span class="nn">os</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-3"></a><span class="kn">import</span> <span class="nn">django.core.handlers.wsgi</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-4"></a><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;your settings&#39;</span>
+<a name="rest_code_084631a1c07f468b96ad0cbdb975b5f3-5"></a><span class="n">application</span> <span class="o">=</span> <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIHandler</span><span class="p">()</span>
+</pre><p>下面是nginx的配置：</p>
+<pre class="code bash"><a name="rest_code_d19a720ecd6b45bbb10079384e21579f-1"></a>server <span class="o">{</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-2"></a>        listen   <span class="m">80</span><span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-3"></a>        server_name jasonwu.me<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-4"></a>        access_log /var/log/jasownu.me/access_log<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-5"></a>        location / <span class="o">{</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-6"></a>            root   /home/app01/<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-7"></a>            uwsgi_pass <span class="m">127</span>.0.0.1:8000<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-8"></a>            include        uwsgi_params<span class="p">;</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-9"></a>      <span class="o">}</span>
+<a name="rest_code_d19a720ecd6b45bbb10079384e21579f-10"></a>  <span class="o">}</span>
+</pre><p>启动服务：</p>
+<pre class="code bash"><a name="rest_code_61b576c2543246e9a4a9301ce0570246-1"></a>/usr/bin/uwsgi -x /home/app01/uwsgi.xml
+<a name="rest_code_61b576c2543246e9a4a9301ce0570246-2"></a>/usr/local/nginx/sbin/nginx
+</pre><p>这样部署完成了</p>
+<p>下面来说说遇到的一个问题，不知道大家有没有遇到，
+在我们启动uwsgi后在uwsgi的日志中会出现如下的信息:</p>
+<pre class="literal-block">
+– unavailable modifier requested: 1 –
+– unavailable modifier requested: 1 –
+</pre>
+<p>表现的现象就是启动一段时间没法访问app，在查看uwsgi的源代码中我们找到打印这部份日志的段落，正常情况下应该返回的-1，目前还在查找这个出现这个错误的原因。</p>
+<p><strong>参考文档:</strong></p>
+<ul class="simple">
+<li>uwsgi的 <a class="reference external" href="http://projects.unbit.it/uwsgi/wiki/TitleIndex">官方wiki</a></li>
+<li><a class="reference external" href="http://www.nightmare.com/medusa/programming.html">Programming in Python with Medusa and the Async Sockets Library</a></li>
+</ul>

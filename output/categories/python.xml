@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jason Wu's Thoughts and Writings (文章分类：python)</title><link>https://vimer.im/</link><description></description><atom:link type="application/rss+xml" href="https://vimer.im/categories/python.xml" rel="self"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:14:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python : 什么是*args和**kwargs？</title><link>https://vimer.im/posts/args_and_kwargs_in_python/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;pre class="code python"&gt;&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-2"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'args = '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-3"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'kwargs = '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-4"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'---------------------------------------'&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-6"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-7"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-8"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_385c6f1332964aaeabdd2a5ebb21b425-9"&gt;&lt;/a&gt;    &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'a'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'2'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;输出结果如下：&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+| args = (1, 2, 3, 4)
+| kwargs = {}
+| ---------------------------------------
+| args = ()
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = (1, 2, 3, 4)
+| kwargs = {'a': 1, 'c': 3, 'b': 2}
+| ---------------------------------------
+| args = ('a', 1, None)
+| kwargs = {'a': 1, 'c': 3, 'b': '2'}
+| ---------------------------------------
+&lt;/pre&gt;
+&lt;p&gt;可以看到，这两个是python中的可变参数。 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 表示任何多个无名参数，它是一个tuple； &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 表示关键字参数，它是一个dict。并且同时使用 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 和 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 时，必须 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 参数列要在 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 前，像foo(a=1, b='2', c=3, a', 1, None, )这样调用的话，会提示语法错误“SyntaxError: non-keyword arg after keyword arg”。&lt;/p&gt;
+&lt;p&gt;呵呵，知道 &lt;tt class="docutils literal"&gt;*args&lt;/tt&gt; 和 &lt;tt class="docutils literal"&gt;**kwargs&lt;/tt&gt; 是什么了吧。还有一个很漂亮的用法，就是创建字典：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;kw_dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-2"&gt;&lt;/a&gt;    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+&lt;a name="rest_code_6c3c8b79a61344f782b663b5f53c4a6e-3"&gt;&lt;/a&gt;    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;kw_dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'a'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'b'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'c'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;其实python中就带有dict类，使用dict(a=1,b=2,c=3)即可创建一个字典了。&lt;/p&gt;
+&lt;p&gt;另:连接两个字典的方法:&lt;/p&gt;
+&lt;p&gt;第一种:&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; a={'a':'a','b':'b'}
+&amp;gt;&amp;gt;&amp;gt; m=dict(c='c',**a)
+&amp;gt;&amp;gt;&amp;gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;第二种:&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; a={'a':'a','b':'b'}
+&amp;gt;&amp;gt;&amp;gt; m={'c':'c'}
+&amp;gt;&amp;gt;&amp;gt; m.update(a)
+&amp;gt;&amp;gt;&amp;gt; m
+{'a': 'a', 'c': 'c', 'b': 'b'}
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/args_and_kwargs_in_python/</guid><pubDate>Mon, 03 Dec 2012 12:17:59 GMT</pubDate></item><item><title>python的lambda函数介绍</title><link>https://vimer.im/posts/introduce_to_python_lambda/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;今天在论坛上看到有人问的一个关于如何从一个python的字典中取到value中最大的那个key值，里面用到了 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 函数，今天那就大致介绍下 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 是个什么东东。
+python支持创建一种匿名的函数（一种没绑定名字的函数），这种函数叫做lambda，这个和fp(函数编程)里面的lambda的含义并不是完全一致，下面这段代码将展示 &lt;tt class="docutils literal"&gt;lambda&lt;/tt&gt; 和普通函数之间的区别&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; def f (x): return x**2
+...
+&amp;gt;&amp;gt;&amp;gt; print f(8)
+64
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; g = lambda x: x**2
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; print g(8)
+64
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;g()是一个 lambda 函数，完成同上面普通函数相同的事情。注意这里的简短的语法：在参数列表周围没有括号，而且忽略了 return 关键字 (隐含存在，因为整个函数只有一行)。而且，该函数没有函数名称，但是可以将它赋值给一个变量进行调用。
+使用 lambda 函数时甚至不需要将它赋值给一个变量。这可能不是世上最有用的东西，它只是展示了 lambda 函数只是一个内联函数。&lt;/p&gt;
+&lt;p&gt;总的来说，lambda 函数可以接收任意多个参数 (包括可选参数) 并且返回单个表达式的值。lambda 函数不能包含命令，包含的表达式不能超过一个。不要试图向 lambda 函数中塞入太多的东西；如果你需要更复杂的东西，应该定义一个普通函数，然后想让它多长就多长。
+这里只是大致介绍一下，想深入研究的可以看文章后面附的文档，这里回到开头的问题，如果返回一个字典中最大的value值的key，下面为代码：&lt;/p&gt;
+&lt;pre class="doctest-block"&gt;
+&amp;gt;&amp;gt;&amp;gt; dict = {'a':1,'b':2,'c':3}
+&amp;gt;&amp;gt;&amp;gt; max(dict.iterkeys(),key=lambda k:dict[k])
+'c'
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/pre&gt;
+&lt;p&gt;下面来大致解释这段代码，先定义了一个列表，通过使用key参数改变了max比较列表元素的方法，最终达到了取得value值最大的key的目的。&lt;/p&gt;
+&lt;p&gt;接下来讲一下，python字典的 &lt;tt class="docutils literal"&gt;iterkeys&lt;/tt&gt; &lt;tt class="docutils literal"&gt;iteritems&lt;/tt&gt; &lt;tt class="docutils literal"&gt;itervalues&lt;/tt&gt; 这三个方法，字典对象也提供keys，items，values这三个方法，那前面的三种方法和后面的三种方法有什么不一样呢，我们大致运行一下就可以知道了，前面的三个方法返回迭代器对象，而后三种方法返回的为列表对象，使用前三种方法更高效一些，后三种方法对内存占用比较大，在python 3.0中取消了iterkeys，iteritems，itervalues这三个方法，将keys，items，values这三个方法功能改为原来iter*的功能。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参考文档:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Python: &lt;a class="reference external" href="http://www.secnetix.de/olli/Python/lambda_functions.hawk"&gt;Lambda Functions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python: &lt;a class="reference external" href="http://docs.python.org/library/functions.html"&gt;Built-in Functions&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/introduce_to_python_lambda/</guid><pubDate>Tue, 23 Oct 2012 12:17:59 GMT</pubDate></item><item><title>CENT OS安装cx_Oracle遇到的问题及解决方法</title><link>https://vimer.im/posts/centos_install_cx_oracle/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;这个是 &lt;tt class="docutils literal"&gt;cx_Oracle&lt;/tt&gt; 的说明链接http://cx-oracle.sourceforge.net/README.txt，我是采用源码安装
+安装过程：&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-1"&gt;&lt;/a&gt;wget  http://prdownloads.sourceforge.net/cx-oracle/cx_Oracle-5.0.3.tar.gz?download
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-2"&gt;&lt;/a&gt;tar zxvf   cx_Oracle-5.0.3.tar.gz
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-3"&gt;&lt;/a&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; cx_Oracle-5.0.3
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-4"&gt;&lt;/a&gt;python setup.py build
+&lt;a name="rest_code_0989bbdc64624827bf0b7a40a9b0c472-5"&gt;&lt;/a&gt;python setup.py install
+&lt;/pre&gt;&lt;p&gt;下面是检查它是否可以用&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;cx_Oracle&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-2"&gt;&lt;/a&gt;&lt;span class="err"&gt;接着出现了两个错误，错误信息如下：&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-3"&gt;&lt;/a&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;python2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;py2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;egg&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-4"&gt;&lt;/a&gt;&lt;span class="ne"&gt;UserWarning&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Module&lt;/span&gt; &lt;span class="n"&gt;cx_Oracle&lt;/span&gt; &lt;span class="n"&gt;was&lt;/span&gt; &lt;span class="n"&gt;already&lt;/span&gt; &lt;span class="n"&gt;imported&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;python2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;packages&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-5"&gt;&lt;/a&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;py2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;x86_64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;egg&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pyc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-6"&gt;&lt;/a&gt;&lt;span class="n"&gt;but&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;local&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;cx_Oracle&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;5.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="n"&gt;being&lt;/span&gt; &lt;span class="n"&gt;added&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;
+&lt;a name="rest_code_622f39814fbd455fafdcf64cb1334b2f-7"&gt;&lt;/a&gt;&lt;span class="ne"&gt;ImportError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;libclntsh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;10.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cannot&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="nb"&gt;file&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;No&lt;/span&gt; &lt;span class="n"&gt;such&lt;/span&gt; &lt;span class="nb"&gt;file&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;directory&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;下面来说说这两个错误的解决方法，
+第一个问题，提示说/usr/local/cx_Oracle-5.0.3已经加入到python的 &lt;tt class="docutils literal"&gt;sys.path&lt;/tt&gt; 里面了
+那么我们就在 &lt;tt class="docutils literal"&gt;sys.path&lt;/tt&gt; 中去掉这个路径：
+具体方法&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-2"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-3"&gt;&lt;/a&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;''&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/setuptools-0.6c11-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-4"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/fudge-0.9.4-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-5"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/python_memcached-1.45-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-6"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/MySQL_python-1.2.3c1-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-7"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/flup-1.0.3.dev_20100525-py2.6.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-8"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/regex-0.1.20100706.1-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-9"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/cx_Oracle-5.0.3-py2.6-linux-x86_64.egg'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-10"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python26.zip'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/plat-linux2'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-11"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-tk'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-old'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-12"&gt;&lt;/a&gt;&lt;span class="s1"&gt;'/usr/local/lib/python2.6/lib-dynload'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-13"&gt;&lt;/a&gt; &lt;span class="s1"&gt;'/usr/local/lib/python2.6/site-packages/PIL'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'/usr/local/cx_Oracle-5.0.3'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-14"&gt;&lt;/a&gt;
+&lt;a name="rest_code_f749e7a082454cd98626f13c90d3f2ab-15"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remove&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s1"&gt;'/usr/local/cx_Oracle-5.0.3'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;p&gt;第一个问题解决，接着第二个问题，这个网上有解决方案，下面说说解决方法：
+这个的原因是 &lt;tt class="docutils literal"&gt;Oracle&lt;/tt&gt; 的路径没有设定&lt;/p&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-1"&gt;&lt;/a&gt;locate libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-2"&gt;&lt;/a&gt;/opt/oracle/product/10.2/db_1/lib/libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-3"&gt;&lt;/a&gt;/opt/oracle/product/10.2/db_1/lib32/libclntsh.so.10.1
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-4"&gt;&lt;/a&gt;&lt;span class="nb"&gt;echo&lt;/span&gt; /opt/oracle/product/10.2/db_1/lib/ &amp;gt;&amp;gt; /etc/ld.so.conf
+&lt;a name="rest_code_ddf015ae63dc4a328918f4f9a0914584-5"&gt;&lt;/a&gt;ldconfig
+&lt;/pre&gt;&lt;p&gt;就这样第二个问题解决
+再试一下：&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-1"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;cx_Oracle&lt;/span&gt;
+&lt;a name="rest_code_07acca17139d4f938cb2bb25f4a040e8-2"&gt;&lt;/a&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>cx_oracle</category><category>python</category><guid>https://vimer.im/posts/centos_install_cx_oracle/</guid><pubDate>Tue, 09 Oct 2012 12:17:59 GMT</pubDate></item><item><title>Python colored output</title><link>https://vimer.im/posts/python_colored_output/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;img alt="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg" src="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg"&gt;
+&lt;p&gt;下面是颜色的代码&lt;/p&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;30mGray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-2"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;31mRed like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-3"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;32mGreen like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-4"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;33mYellow like Yolk&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;34mBlue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-6"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;35mMagenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-7"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;36mCyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-8"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;37mWhite like Whipped Cream&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-9"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;38mCrimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-10"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;41mHighlighted Red like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-11"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;42mHighlighted Green like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-12"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;43mHighlighted Brown like Bear&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-13"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;44mHighlighted Blue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-14"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;45mHighlighted Magenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-15"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;46mHighlighted Cyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-16"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;47mHighlighted Gray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-17"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;48mHighlighted Crimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/python_colored_output/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>Welcome to Nikola</title><link>https://vimer.im/posts/welcome-to-nikola/</link><dc:creator>Roberto Alsina</dc:creator><description>&lt;div&gt;&lt;div class="figure"&gt;
+&lt;a class="reference external image-reference" href="https://farm1.staticflickr.com/138/352972944_4f9d568680_z.jpg?zz=1"&gt;&lt;img alt="Nikola Tesla Corner by nicwest, on Flickr" class="thumbnail" src="https://farm1.staticflickr.com/138/352972944_4f9d568680.jpg"&gt;&lt;/a&gt;
+&lt;/div&gt;
+&lt;p&gt;If you can see this in a web browser, it means you managed to install Nikola,
+and build a site using it. Congratulations!&lt;/p&gt;
+&lt;p&gt;Next steps:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://vimer.im/pages/handbook/"&gt;Read the manual&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://getnikola.com"&gt;Visit the Nikola website to learn more&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://vimer.im/galleries/demo/"&gt;See a demo photo gallery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://vimer.im/pages/listings-demo/"&gt;See a demo listing&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://vimer.im/pages/slides-demo/"&gt;See a demo slideshow&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://vimer.im/pages/dr-nikolas-vendetta/"&gt;See a demo of a longer text&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Send feedback to &lt;a class="reference external" href="mailto:info@getnikola.com"&gt;info@getnikola.com&lt;/a&gt;!&lt;/p&gt;&lt;/div&gt;</description><category>blog</category><category>demo</category><category>nikola</category><category>python</category><guid>https://vimer.im/posts/welcome-to-nikola/</guid><pubDate>Sat, 31 Mar 2012 02:00:00 GMT</pubDate></item></channel></rss>
