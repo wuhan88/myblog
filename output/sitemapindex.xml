@@ -27,7 +27,7 @@
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/blog.xml</loc>
-  <lastmod>2018-02-24T08:13:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/cat_linux.xml</loc>
@@ -123,7 +123,7 @@
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/python.xml</loc>
-  <lastmod>2018-02-24T08:14:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/rpm.xml</loc>
@@ -187,18 +187,18 @@
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/galleries/demo/rss.xml</loc>
-  <lastmod>2018-02-24T08:25:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/galleries/rss.xml</loc>
-  <lastmod>2018-02-24T08:25:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/rss.xml</loc>
-  <lastmod>2018-02-24T08:14:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/sitemap.xml</loc>
-  <lastmod>2018-02-24T08:25:00Z</lastmod>
+  <lastmod>2018-02-24T08:35:00Z</lastmod>
  </sitemap>
 </sitemapindex>
