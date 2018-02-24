@@ -24,7 +24,7 @@ Windows操作系统版本和Linux。通过这一功能强大的企业级迁移�
 
 VMwareConverter工作原理虚拟机示意如图所示。
 
-.. image:: http://farm6.staticflickr.com/5251/5452914685_5e468db0be.jpg 
+.. image:: https://farm6.staticflickr.com/5251/5452914685_5e468db0be.jpg 
    :width: 600
 
 关于热克隆和冷克隆

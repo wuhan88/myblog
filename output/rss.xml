@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jason Wu's Thoughts and Writings</title><link>https://vimer.im/</link><description></description><atom:link href="https://vimer.im/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 08:35:50 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>如何判断一个值在lua的table里</title><link>https://vimer.im/posts/search_for_an_item_in_a_lua_list/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;最近在用lua写一个nginx模块时，遇到一个需要判断一个值是否在一个table里的问题，我有一个类似如下的一个table:&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jason Wu's Thoughts and Writings</title><link>https://vimer.im/</link><description></description><atom:link rel="self" href="https://vimer.im/rss.xml" type="application/rss+xml"></atom:link><language>zh_cn</language><copyright>Contents © 2018 &lt;a href="mailto:jasonwux@gmail.com"&gt;JasonWu&lt;/a&gt; </copyright><lastBuildDate>Sat, 24 Feb 2018 09:49:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>如何判断一个值在lua的table里</title><link>https://vimer.im/posts/search_for_an_item_in_a_lua_list/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;最近在用lua写一个nginx模块时，遇到一个需要判断一个值是否在一个table里的问题，我有一个类似如下的一个table:&lt;/p&gt;
 &lt;pre class="code python"&gt;&lt;a name="rest_code_c1e6776e10474f4fb94504861cf87512-1"&gt;&lt;/a&gt;&lt;span class="n"&gt;local&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="s2"&gt;"apple"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"orange"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"pear"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"banana"&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;我怎样去判断orange是否在这个table里，在python里我可以使用如下的方法：&lt;/p&gt;
 &lt;pre class="code python"&gt;&lt;a name="rest_code_e6a75492e314492bb71044ddb51a3997-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="s2"&gt;"orange"&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
@@ -171,32 +171,32 @@
 &lt;div class="section" id="i-o"&gt;
 &lt;h2&gt;1.阻塞I/O模型&lt;/h2&gt;
 &lt;p&gt;最流行的I/O模型是阻塞I/O模型，缺省时，所有套接口都是阻塞的。&lt;/p&gt;
-&lt;img alt="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" src="http://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" src="https://farm6.staticflickr.com/5195/7407797190_a48b6dcf80_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id1"&gt;
 &lt;h2&gt;2. 非阻塞I/O模型&lt;/h2&gt;
 &lt;p&gt;前三次调用recvfrom时仍无数据返回，因此内核立即返回一个EWOULDBLOCK错误。第四次调用recvfrom时，数据已经准备好，被拷贝到应用缓冲区，recvfrom返回成功指示，接着就是我们处理数据。当一个应用进程像这样对一个非阻塞描述字循环调用recvfrom时，我们称此过程为轮询(polling)。应用进程连续不断地查询内核，看看某操作是否准备好，这对cpu时间是极大的浪费，但这种模型只是偶尔才遇到，一般是在只专门提供某种功能的系统中才有。&lt;/p&gt;
-&lt;img alt="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" src="http://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" src="https://farm6.staticflickr.com/5332/7407811366_60f22d6337_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id2"&gt;
 &lt;h2&gt;3. I/O复用模型&lt;/h2&gt;
 &lt;p&gt;有了I/O复用，我们就可以调用select或poll，在这两个系统调用中的某一个上阻塞，而不是阻塞于真正的I/O系统调用。如图6.3，我们阻塞于select调用，等待数据报套接口可读。当select返回套接口可读条件时，我们调用recvfrom将数据报拷贝到应用缓冲区中。使用select的好处在于我们可以等待多个描述字准备好。&lt;/p&gt;
-&lt;img alt="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" src="http://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" src="https://farm6.staticflickr.com/5447/7407852344_49d1a95c98_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id3"&gt;
 &lt;h2&gt;4. 信号驱动I/O模型&lt;/h2&gt;
 &lt;p&gt;我们也可以用信号，让内核在描述字准备好时，用信号SIGIO通知我们，我们将此方法称为信号驱动I/O，如图6.4
 首先我们允许套接口进行信号驱动IO，并通过系统调用sigaction安装一个信号处理程序。此系统调用立即返回，进程继续工作，它是非阻塞的。当数据报准备好被读时，就为该进程生成一个SIGIO信号。我们随即可以在信号处理程序中调用recvfrom来读数据报，并通知主循环数据已准备好被处理。也可以通知主循环，让它来读数据报。无论我们如何处理SIGIO信号，这种模型的好处是当等待数据报到达时，可以不阻塞。主循环可以继续执行，只是等待信号处理程序的通知,或者数据已准备好处理，或者数据报已准备好被读。&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" src="http://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" src="https://farm8.staticflickr.com/7258/7407859790_b922c7fedf_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id4"&gt;
 &lt;h2&gt;5. 异步I/O模型&lt;/h2&gt;
 &lt;p&gt;异步IO是POSIX实时扩展，我们让内核启动操作，并在整个操作完成后(包括将数据从内核拷贝到我们自己的缓冲区)通知我们。这种模型没有广泛使用。这种模型与前一节介绍的信号驱动模型的主要区别在于：信号驱动I/O是由内核通知我们何时可以启动一个I/O操作，而异步I/O模型是由内核通知我们I/O操作何时完成。我们调用函数aio_read(POSIX异步I/O函数以aio_或者lio_开头)，给内核传递描述字，缓冲区指针，缓冲区大小(与read相同的三个参数)，文件偏移(与lseek类似)，并告诉内核当前整个操作完成是如何通知我们。此系统调用立即返回，我们的进程不阻塞于等待I/O操作的完成。在此例子中，我们假设要求内核在操作完成时生成一个信号，此信号直到数据已拷贝到应用缓冲区才生成，这一点是与信号驱动I/O模型不同的。&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" src="http://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" src="https://farm8.staticflickr.com/7106/7407898142_64f4033a11_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id5"&gt;
 &lt;h2&gt;6. 五种不同I/O模型的比较&lt;/h2&gt;
-&lt;img alt="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" src="http://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" src="https://farm8.staticflickr.com/7121/7407921310_b58dfa8cb5_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="i-oi-o"&gt;
 &lt;h2&gt;7. 同步I/O与异步I/O&lt;/h2&gt;
@@ -369,7 +369,7 @@ python支持创建一种匿名的函数（一种没绑定名字的函数），�
 &lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id12"&gt;DR模式：(Direct Routing)直接路由模式&lt;/a&gt;&lt;/h2&gt;
 &lt;div class="section" id="dr"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id13"&gt;DR模式的网络拓扑：&lt;/a&gt;&lt;/h3&gt;
-&lt;img alt="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" src="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" src="https://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id1"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id14"&gt;DR模式的工作过程：&lt;/a&gt;&lt;/h3&gt;
@@ -380,7 +380,7 @@ python支持创建一种匿名的函数（一种没绑定名字的函数），�
 &lt;div class="section" id="lvsreal-server"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id16"&gt;LVS和Real-server必须在相同的网段&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;DR模式在转发client的包时，只修改了包目的MAC地址为选定的Real-server的mac地址，所以如果LVS和Real-server在不通的广播域内，那么Real-server就没办法接收到转发的包。下面是mac地址的修改过程：&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" src="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" src="https://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="lvs"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id17"&gt;LVS不需要开启路由转发：&lt;/a&gt;&lt;/h4&gt;
@@ -389,7 +389,7 @@ python支持创建一种匿名的函数（一种没绑定名字的函数），�
 &lt;div class="section" id="arp"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id18"&gt;ARP问题：&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;通常，DR模式需要在Real-server上配置VIP，配置的方式为：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_7bc82f92dadd42b68e1c8b359c076481-1"&gt;&lt;/a&gt;/sbin/ifconfig lo:0 inet VIP netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_2d63e9196905427c99b8db69890e754d-1"&gt;&lt;/a&gt;/sbin/ifconfig lo:0 inet VIP netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
 &lt;/pre&gt;&lt;p&gt;原因在于，当LVS把client的包转发给Real-server时，因为包的目的IP地址是VIP，那么如果Real-server收到这个包后，发现包的目的IP不是自己的系统IP，那么就会认为这个包不是发给自己的，就会丢弃这个包，所以需要将这个IP地址绑到网卡上；当发送应答包给client时，Real-server就会把包的源和目的地址调换，直接回复给client。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;关于ARP广播：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -419,10 +419,10 @@ client eth0 00:0c:29:d2:c7:aa 192.168.18.129
 &lt;/pre&gt;
 &lt;p&gt;三个端口都发送了arp的reply包，但是192.168.18.129使用的第一个回应的eth4的mac地址作为ping请求的端口，由于192.168.18.10是icmp包中的目的地址，那么ping的应答包，会从eth0端口发出。&lt;/p&gt;
 &lt;p&gt;如果Real-server有个多个网卡，每个网卡在不同的网段，那么可以过滤掉非本网卡ARP请求的回应；但是如果多个网卡的ip在一个网段，那么就不行了。&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_f5ffeb4b3a644ba88e7b57b9b28b021f-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_filter&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_7c64f21c548048329526c0519182ce4d-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_filter&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;对于多个接口在相同网段可以设置下面的来防止：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_ignore&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-2"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_announce&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_c21b2e13e6e54d309ccf7246adab19ed-1"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_ignore&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;a name="rest_code_c21b2e13e6e54d309ccf7246adab19ed-2"&gt;&lt;/a&gt;sysctl -w net.ipv4.conf.all.arp_announce&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;还是从192.168.18.129 ping 192.168.18.10时，tcpdump抓包发现:&lt;/p&gt;
 &lt;pre class="literal-block"&gt;
 00:0c:29:d2:c7:aa &amp;gt; ff:ff:ff:ff:ff:ff, ARP, length 60: arp who-has 192.168.18.10 tell 192.168.18.129
@@ -436,7 +436,7 @@ client eth0 00:0c:29:d2:c7:aa 192.168.18.129
 &lt;/pre&gt;
 &lt;p&gt;看到了么，现在只有eth0会回应arp请求了。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;arp报文格式：&lt;/strong&gt;&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" src="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" src="https://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg"&gt;
 &lt;p&gt;请求报文：MAC地址字段是空的。
 应答报文：所有字段都又内容。:&lt;/p&gt;
 &lt;pre class="literal-block"&gt;
@@ -481,9 +481,9 @@ the level announces more valid sender’s information.
 &lt;/ul&gt;
 &lt;p&gt;当内网的机器要发送一个到外部的ip包，那么它就会请求路由器的Mac地址，发送一个arp请求，这个arp请求里面包括了自己的ip地址和Mac地址，而linux默认是使用ip的源ip地址作为arp里面的源ip地址，而不是使用发送设备上面的 ，这样在lvs这样的架构下，所有发送包都是同一个VIP地址，那么arp请求就会包括VIP地址和设备 Mac，而路由器收到这个arp请求就会更新自己的arp缓存，这样就会造成ip欺骗了，VIP被抢夺，所以就会有问题。&lt;/p&gt;
 &lt;p&gt;现在假设一个场景来解释 &lt;tt class="docutils literal"&gt;arp_announce&lt;/tt&gt; ：&lt;/p&gt;
-&lt;pre class="code rst"&gt;&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-1"&gt;&lt;/a&gt;Real-server的ip地址：202.106.1.100(public local address)，
-&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-2"&gt;&lt;/a&gt;172.16.1.100(private local address)，
-&lt;a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-3"&gt;&lt;/a&gt;202.106.1.254(VIP)
+&lt;pre class="code rst"&gt;&lt;a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-1"&gt;&lt;/a&gt;Real-server的ip地址：202.106.1.100(public local address)，
+&lt;a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-2"&gt;&lt;/a&gt;172.16.1.100(private local address)，
+&lt;a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-3"&gt;&lt;/a&gt;202.106.1.254(VIP)
 &lt;/pre&gt;&lt;p&gt;如果发送到client的ip包产生的arp请求的源地址是202.106.1.254(VIP),那么LVS上的VIP就会被冲掉，因为交换机上现在的arp对应关系是Real-server上的VIP对应自己的一个MAC，那么LVS上的VIP就失效了。:&lt;/p&gt;
 &lt;pre class="literal-block"&gt;
 arp_ignore – INTEGER
@@ -515,7 +515,7 @@ when ARP request is received on the {interface}
 &lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id19"&gt;IP Tunneling模式：&lt;/a&gt;&lt;/h2&gt;
 &lt;div class="section" id="id3"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id20"&gt;IP Tunneling的拓扑图&lt;/a&gt;&lt;/h3&gt;
-&lt;img alt="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" src="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" src="https://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id4"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id21"&gt;IP Tunneling的工作过程&lt;/a&gt;&lt;/h3&gt;
@@ -528,7 +528,7 @@ when ARP request is received on the {interface}
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id22"&gt;IP Tunneling的几个细节问题&lt;/a&gt;&lt;/h3&gt;
 &lt;div class="section" id="ip"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id23"&gt;IP封包的过程：(如图)&lt;/a&gt;&lt;/h4&gt;
-&lt;img alt="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" src="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" src="https://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id6"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id24"&gt;LVS和Real-server不需要在一个网段：&lt;/a&gt;&lt;/h4&gt;
@@ -538,24 +538,24 @@ when ARP request is received on the {interface}
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id25"&gt;Real-server的系统设置：&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;由于需要Real-server支持IP Tunneling，所以设置与DR模式不太一样，LVS不需要设置tunl设备，LVS本身可以进行封装
 i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-1"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0 &lt;span class="m"&gt;172&lt;/span&gt;.16.1.254 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-2"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-3"&gt;&lt;/a&gt;tunl0 Link encap:IPIP Tunnel HWaddr
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-4"&gt;&lt;/a&gt;inet addr:172.16.1.254 Mask:255.255.255.255
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-5"&gt;&lt;/a&gt;UP RUNNING NOARP MTU:1480 Metric:1
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-6"&gt;&lt;/a&gt;RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-7"&gt;&lt;/a&gt;TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-8"&gt;&lt;/a&gt;collisions:0 txqueuelen:0
-&lt;a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-9"&gt;&lt;/a&gt;RX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt; TX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-1"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0 &lt;span class="m"&gt;172&lt;/span&gt;.16.1.254 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.255
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-2"&gt;&lt;/a&gt;shell&amp;gt; ifconfig tunl0
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-3"&gt;&lt;/a&gt;tunl0 Link encap:IPIP Tunnel HWaddr
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-4"&gt;&lt;/a&gt;inet addr:172.16.1.254 Mask:255.255.255.255
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-5"&gt;&lt;/a&gt;UP RUNNING NOARP MTU:1480 Metric:1
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-6"&gt;&lt;/a&gt;RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-7"&gt;&lt;/a&gt;TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-8"&gt;&lt;/a&gt;collisions:0 txqueuelen:0
+&lt;a name="rest_code_4e1c705b8f594e569a0f56e025845352-9"&gt;&lt;/a&gt;RX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt; TX bytes:0 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.0 b&lt;span class="o"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;当添加tunl0设备时，自动载入需要的模块：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-1"&gt;&lt;/a&gt;shell&amp;gt; lsmod &lt;span class="p"&gt;|&lt;/span&gt;grep ipip
-&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-2"&gt;&lt;/a&gt;ipip &lt;span class="m"&gt;7516&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
-&lt;a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-3"&gt;&lt;/a&gt;tunnel4 &lt;span class="m"&gt;2700&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; ipip
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-1"&gt;&lt;/a&gt;shell&amp;gt; lsmod &lt;span class="p"&gt;|&lt;/span&gt;grep ipip
+&lt;a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-2"&gt;&lt;/a&gt;ipip &lt;span class="m"&gt;7516&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-3"&gt;&lt;/a&gt;tunnel4 &lt;span class="m"&gt;2700&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; ipip
 &lt;/pre&gt;&lt;p&gt;其中，ipip依赖于tunnel4，假如现在删除tunnel4的话：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_3bdb51da668e412682b13029e9bb0a82-1"&gt;&lt;/a&gt;shell&amp;gt; rmmod tunnel4
-&lt;a name="rest_code_3bdb51da668e412682b13029e9bb0a82-2"&gt;&lt;/a&gt;ERROR: Module tunnel4 is in use by ipip
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_4c0cc320ea3746b0afe50390e2674451-1"&gt;&lt;/a&gt;shell&amp;gt; rmmod tunnel4
+&lt;a name="rest_code_4c0cc320ea3746b0afe50390e2674451-2"&gt;&lt;/a&gt;ERROR: Module tunnel4 is in use by ipip
 &lt;/pre&gt;&lt;p&gt;如果添加tunl0失败，那么可能是内核没有开启tunneling功能，默认是以模块形式，加载到内核里的：&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" src="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" src="https://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id7"&gt;
 &lt;h4&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id26"&gt;ARP问题：&lt;/a&gt;&lt;/h4&gt;
@@ -571,21 +571,21 @@ i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)&lt;/p&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id28"&gt;NAT模式：&lt;/a&gt;&lt;/h2&gt;
 &lt;div class="section" id="id9"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id29"&gt;NAT模式的拓扑图&lt;/a&gt;&lt;/h3&gt;
-&lt;img alt="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" src="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" src="https://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id10"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id30"&gt;NAT模式的工作过程:&lt;/a&gt;&lt;/h3&gt;
-&lt;img alt="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" src="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg"&gt;
-&lt;pre class="code rst"&gt;&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-1"&gt;&lt;/a&gt;client：202.100.1.2
-&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-2"&gt;&lt;/a&gt;VIP：202.103.106.5
-&lt;a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-3"&gt;&lt;/a&gt;Real-server：172.16.0.2 和 172.16.0.3（提供http和ftp服务）
+&lt;img alt="https://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" src="https://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg"&gt;
+&lt;pre class="code rst"&gt;&lt;a name="rest_code_afb854615c604530a29c2417c9ae31e3-1"&gt;&lt;/a&gt;client：202.100.1.2
+&lt;a name="rest_code_afb854615c604530a29c2417c9ae31e3-2"&gt;&lt;/a&gt;VIP：202.103.106.5
+&lt;a name="rest_code_afb854615c604530a29c2417c9ae31e3-3"&gt;&lt;/a&gt;Real-server：172.16.0.2 和 172.16.0.3（提供http和ftp服务）
 &lt;/pre&gt;&lt;p&gt;1&amp;gt; client发送request到LVS的VIP上，VIP选择一个Real-server，并记录连接信息到hash表中，然后修改client的request的目的IP地址为Real-server的地址，将请求发给Real-server;&lt;/p&gt;
 &lt;p&gt;2&amp;gt; Real-server收到request包后，发现目的IP是自己的IP，于是处理请求，然后发送reply给LVS;&lt;/p&gt;
 &lt;p&gt;3&amp;gt; LVS收到reply包后，修改reply包的的源地址为VIP，发送给client;&lt;/p&gt;
 &lt;p&gt;4&amp;gt; 从client来的属于本次连接的包，查hash表，然后发给对应的Real-server。&lt;/p&gt;
 &lt;p&gt;5&amp;gt; 当client发送完毕，此次连接结束或者连接超时，那么LVS自动从hash表中删除此条记录。&lt;/p&gt;
 &lt;p&gt;下面是地址转换的过程：&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" src="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" src="https://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" style="width: 600px;"&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id11"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/#id31"&gt;NAT模式的几个细节问题&lt;/a&gt;&lt;/h3&gt;
@@ -620,66 +620,66 @@ i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)&lt;/p&gt;
 &lt;p&gt;重定向的处理办法（Real-server的配置）：&lt;/p&gt;
 &lt;p&gt;1&amp;gt; 关闭Real-server的重定向，忽略LVS发来的重定向包&lt;/p&gt;
 &lt;p&gt;2&amp;gt; 删除到网段的路由：&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" src="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" src="https://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" style="width: 600px;"&gt;
 &lt;p&gt;执行：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_3534305f9d9e4f658c7bfd083be656c1-1"&gt;&lt;/a&gt;realserver:/etc/lvs#route del -net &lt;span class="m"&gt;192&lt;/span&gt;.168.1.0 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.0 dev eth0
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_0e52c0edfede4d1484e2327eeb356c8c-1"&gt;&lt;/a&gt;realserver:/etc/lvs#route del -net &lt;span class="m"&gt;192&lt;/span&gt;.168.1.0 netmask &lt;span class="m"&gt;255&lt;/span&gt;.255.255.0 dev eth0
 &lt;/pre&gt;&lt;p&gt;路由已经被删除了：&lt;/p&gt;
-&lt;img alt="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" src="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" src="https://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" style="width: 600px;"&gt;
 &lt;p&gt;3&amp;gt; LVS-NAT模式支持四层的端口重写：
 LVS-DR，LVS-TUN不能修改client发来的请求的目的端口，但是LVS-NAT可以，参考命令：&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_a7053a6227a74681930a7b1ecd35b8a9-1"&gt;&lt;/a&gt;shell&amp;gt; ipvsadm -a -t VIP:PORT -r RIP:NEWPORT -m -w &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_6eec0ab135004417a7772a74f74fd072-1"&gt;&lt;/a&gt;shell&amp;gt; ipvsadm -a -t VIP:PORT -r RIP:NEWPORT -m -w &lt;span class="m"&gt;1&lt;/span&gt;
 &lt;/pre&gt;&lt;p&gt;LVS的三种转发模式就先说到这吧，具体的细节可以参考LVS的HOWTO文档。&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;</description><category>lvs</category><guid>https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>Python colored output</title><link>https://vimer.im/posts/python_colored_output/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;img alt="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg" src="http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg"&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>lvs</category><guid>https://vimer.im/posts/detailed_lvs_difference_between_the_three_models/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>Python colored output</title><link>https://vimer.im/posts/python_colored_output/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;img alt="https://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg" src="https://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg"&gt;
 &lt;p&gt;下面是颜色的代码&lt;/p&gt;
-&lt;pre class="code python"&gt;&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;30mGray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-2"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;31mRed like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-3"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;32mGreen like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-4"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;33mYellow like Yolk&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;34mBlue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-6"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;35mMagenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-7"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;36mCyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-8"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;37mWhite like Whipped Cream&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-9"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;38mCrimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-10"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;41mHighlighted Red like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-11"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;42mHighlighted Green like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-12"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;43mHighlighted Brown like Bear&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-13"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;44mHighlighted Blue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-14"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;45mHighlighted Magenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-15"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;46mHighlighted Cyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-16"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;47mHighlighted Gray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
-&lt;a name="rest_code_d8a9914c1c6d4b0192a7810e444ff0fc-17"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;48mHighlighted Crimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;pre class="code python"&gt;&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-1"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;30mGray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-2"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;31mRed like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-3"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;32mGreen like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-4"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;33mYellow like Yolk&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-5"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;34mBlue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-6"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;35mMagenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-7"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;36mCyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-8"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;37mWhite like Whipped Cream&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-9"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;38mCrimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-10"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;41mHighlighted Red like Radish&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-11"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;42mHighlighted Green like Grass&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-12"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;43mHighlighted Brown like Bear&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-13"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;44mHighlighted Blue like Blood&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-14"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;45mHighlighted Magenta like Mimosa&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-15"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;46mHighlighted Cyan like Caribbean&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-16"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;47mHighlighted Gray like Ghost&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
+&lt;a name="rest_code_cf2488c0e0834bedb9d075f0980c29a6-17"&gt;&lt;/a&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;48mHighlighted Crimson like Chianti&lt;/span&gt;&lt;span class="se"&gt;\033&lt;/span&gt;&lt;span class="s1"&gt;[1;m'&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;</description><category>python</category><guid>https://vimer.im/posts/python_colored_output/</guid><pubDate>Sat, 29 Sep 2012 12:17:59 GMT</pubDate></item><item><title>LVS网卡软中断配置</title><link>https://vimer.im/posts/adjust_nic_irq_for_lvs/</link><dc:creator>JasonWu</dc:creator><description>&lt;div&gt;&lt;p&gt;这是之前做LVS的网卡软中断配置时整理的一个文档，网上的资料不是很全，将配置方法share给大家。&lt;/p&gt;
 &lt;p&gt;为什么要配置网卡软中断，主要是因为在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助于提高系统的整体吞吐能力和性能。
 先看下未升级之前的效果：可以看到网卡软中断被分配到了两个指定的CPU核心上:&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg" src="http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg" src="https://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg"&gt;
 &lt;p&gt;经过升级内核调整参数后的效果：&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" src="http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" src="https://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg" style="width: 600px;"&gt;
 &lt;p&gt;软中断被均匀的分配到8个核心上，下面来说下具体过程&lt;/p&gt;
 &lt;div class="section" id="id1"&gt;
 &lt;h2&gt;第一步&lt;/h2&gt;
 &lt;p&gt;将内核升级到2.6.32以上，升级过程略去&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-1"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？这个主要是因为2.6.18还不支持RPS这个特性那什么是rps呢？具体可以参看：
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-2"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-3"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-4"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-5"&gt;&lt;/a&gt;这个主要是因为2.6.18不支持RPS这个特性
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-6"&gt;&lt;/a&gt;那什么是rps呢？具体可以参看：
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-7"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
-&lt;a name="rest_code_6b98747541354417842c9c405b6390fb-8"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-1"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？这个主要是因为2.6.18还不支持RPS这个特性那什么是rps呢？具体可以参看：
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-2"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-3"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-4"&gt;&lt;/a&gt;为什么要将2.6.18内核升级到2.6.32？
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-5"&gt;&lt;/a&gt;这个主要是因为2.6.18不支持RPS这个特性
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-6"&gt;&lt;/a&gt;那什么是rps呢？具体可以参看：
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-7"&gt;&lt;/a&gt;http://lwn.net/Articles/328339/
+&lt;a name="rest_code_0650f69bf6b14f7d95fdada427d0c9d1-8"&gt;&lt;/a&gt;http://lwn.net/Articles/378617/
 &lt;/pre&gt;&lt;/div&gt;
 &lt;div class="section" id="id2"&gt;
 &lt;h2&gt;第二步：&lt;/h2&gt;
 &lt;p&gt;如果你的服务器网卡和我一样是Broadcom的，那么你就得做这一步，不是请跳到第三步&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" src="http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" style="width: 600px; height: 44px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" src="https://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg" style="width: 600px; height: 44px;"&gt;
 &lt;p&gt;在/etc/modprobe.conf加上下面这行： options bnx2 disable_msi=1
 改完这个重新加载下网卡模块modprobe -r bnx2;modprobe bnx2或者重新启动服务器。&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-1"&gt;&lt;/a&gt;为什么要加这个？
-&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-2"&gt;&lt;/a&gt;这个主要是因为broadcom网卡开启msi后，会造成后面的修改smp_affinity丌生效，intel的网卡没这个问题。
-&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-3"&gt;&lt;/a&gt;
-&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-4"&gt;&lt;/a&gt;msi是什么？下面的链接有解析：
-&lt;a name="rest_code_a15474fee00146b49edc8d35ae1beb5a-5"&gt;&lt;/a&gt;http://lwn.net/Articles/44139/
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_344aa0d8b2664a748ffc3ae41e9d606e-1"&gt;&lt;/a&gt;为什么要加这个？
+&lt;a name="rest_code_344aa0d8b2664a748ffc3ae41e9d606e-2"&gt;&lt;/a&gt;这个主要是因为broadcom网卡开启msi后，会造成后面的修改smp_affinity丌生效，intel的网卡没这个问题。
+&lt;a name="rest_code_344aa0d8b2664a748ffc3ae41e9d606e-3"&gt;&lt;/a&gt;
+&lt;a name="rest_code_344aa0d8b2664a748ffc3ae41e9d606e-4"&gt;&lt;/a&gt;msi是什么？下面的链接有解析：
+&lt;a name="rest_code_344aa0d8b2664a748ffc3ae41e9d606e-5"&gt;&lt;/a&gt;http://lwn.net/Articles/44139/
 &lt;/pre&gt;&lt;/div&gt;
 &lt;div class="section" id="id3"&gt;
 &lt;h2&gt;第三步：&lt;/h2&gt;
@@ -692,9 +692,9 @@ LVS-DR，LVS-TUN不能修改client发来的请求的目的端口，但是LVS-NAT
 &lt;h2&gt;第四步：&lt;/h2&gt;
 &lt;p&gt;设置eth0、eth1对应中断号的 &lt;tt class="docutils literal"&gt;smp_affinity&lt;/tt&gt; 为 “ff”
 先看一下网卡的中断号：&lt;/p&gt;
-&lt;img alt="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" src="http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" style="width: 600px;"&gt;
+&lt;img alt="https://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" src="https://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg" style="width: 600px;"&gt;
 &lt;p&gt;从图中可以看到网卡eth1的中断号为16,eth0的中断号为18
 将/proc/irq/中断号/smp_affinity修改为ff，修改完成后就可以开启lvs了，现在中断应该均分到各个核心上了。&lt;/p&gt;
-&lt;pre class="code bash"&gt;&lt;a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-1"&gt;&lt;/a&gt;smp_affinity这个参数是怎么得来的？ 可参考下面链接：
-&lt;a name="rest_code_8efce9cb2a9a46e2a675ac4cba6f178b-2"&gt;&lt;/a&gt;http://www.cs.uwaterloo.ca/~brecht/servers/apic/SMP-affinity.txt
+&lt;pre class="code bash"&gt;&lt;a name="rest_code_32e262c7d91a46cda50142a1ac9d29ff-1"&gt;&lt;/a&gt;smp_affinity这个参数是怎么得来的？ 可参考下面链接：
+&lt;a name="rest_code_32e262c7d91a46cda50142a1ac9d29ff-2"&gt;&lt;/a&gt;http://www.cs.uwaterloo.ca/~brecht/servers/apic/SMP-affinity.txt
 &lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</description><category>irq</category><category>lvs</category><guid>https://vimer.im/posts/adjust_nic_irq_for_lvs/</guid><pubDate>Sat, 08 Sep 2012 12:17:59 GMT</pubDate></item></channel></rss>

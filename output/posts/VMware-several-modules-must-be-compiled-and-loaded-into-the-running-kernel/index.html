@@ -98,18 +98,18 @@
 <p>在ubuntu 12.04上安装vmware workstation 8.02,</p>
 <p>在vmware kernel module updater这个窗口上，编译第二步Virtual Network Device 时出现错误</p>
 <p>查看Log，有如下报错：</p>
-<pre class="code rst"><a name="rest_code_075dfa70878d4c14a2f7f2502ab5aa64-1"></a>2012-06-24T14:56:24.833+08:00| vthread-3| I120: Your GCC version: 4.6
-<a name="rest_code_075dfa70878d4c14a2f7f2502ab5aa64-2"></a>2012-06-24T14:56:24.839+08:00| vthread-3| I120: Your GCC version: 4.6
-<a name="rest_code_075dfa70878d4c14a2f7f2502ab5aa64-3"></a>2012-06-24T14:56:24.855+08:00| vthread-3| I120: Header path /lib/modules/3.2.0-25-generic/build/include for kernel release 3.2.0-25-generic is valid.
-<a name="rest_code_075dfa70878d4c14a2f7f2502ab5aa64-4"></a>2012-06-24T14:56:24.867+08:00| vthread-3| I120: Trying to find a suitable PBM set for kernel 3.2.0-25-generic.
+<pre class="code rst"><a name="rest_code_f8362436aad1419480a42e4b5b368a0d-1"></a>2012-06-24T14:56:24.833+08:00| vthread-3| I120: Your GCC version: 4.6
+<a name="rest_code_f8362436aad1419480a42e4b5b368a0d-2"></a>2012-06-24T14:56:24.839+08:00| vthread-3| I120: Your GCC version: 4.6
+<a name="rest_code_f8362436aad1419480a42e4b5b368a0d-3"></a>2012-06-24T14:56:24.855+08:00| vthread-3| I120: Header path /lib/modules/3.2.0-25-generic/build/include for kernel release 3.2.0-25-generic is valid.
+<a name="rest_code_f8362436aad1419480a42e4b5b368a0d-4"></a>2012-06-24T14:56:24.867+08:00| vthread-3| I120: Trying to find a suitable PBM set for kernel 3.2.0-25-generic.
 </pre>
 <p>解决方案：</p>
-<pre class="code bash"><a name="rest_code_3375c579b2c240108e71c4603251e6cc-1"></a><span class="c1"># cd /usr/lib/vmware/modules;</span>
-<a name="rest_code_3375c579b2c240108e71c4603251e6cc-2"></a><span class="c1"># wget http://pavlinux.ru/vmware/8.0.2/source.tar.lzma;</span>
-<a name="rest_code_3375c579b2c240108e71c4603251e6cc-3"></a><span class="c1"># tar -xf source.tar.lzma;</span>
-<a name="rest_code_3375c579b2c240108e71c4603251e6cc-4"></a><span class="c1"># vmware-modconfig --console --install-all</span>
+<pre class="code bash"><a name="rest_code_a5f7b20bbaf94ff68e77132475d1a807-1"></a><span class="c1"># cd /usr/lib/vmware/modules;</span>
+<a name="rest_code_a5f7b20bbaf94ff68e77132475d1a807-2"></a><span class="c1"># wget http://pavlinux.ru/vmware/8.0.2/source.tar.lzma;</span>
+<a name="rest_code_a5f7b20bbaf94ff68e77132475d1a807-3"></a><span class="c1"># tar -xf source.tar.lzma;</span>
+<a name="rest_code_a5f7b20bbaf94ff68e77132475d1a807-4"></a><span class="c1"># vmware-modconfig --console --install-all</span>
 </pre>
-<img alt="http://pavlinux.ru/vmware/8.0.2/make.png" src="http://pavlinux.ru/vmware/8.0.2/make.png">
+<img alt="https://pavlinux.ru/vmware/8.0.2/make.png" src="https://pavlinux.ru/vmware/8.0.2/make.png">
 </div>
     </div>
     <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

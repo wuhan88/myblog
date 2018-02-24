@@ -9,7 +9,7 @@ Python colored output
 .. description:
 .. type: text
 
-.. image:: http://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg
+.. image:: https://farm8.staticflickr.com/7021/6509302675_ca07164663.jpg
 
 下面是颜色的代码
 

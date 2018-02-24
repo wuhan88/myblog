@@ -15,7 +15,7 @@ DR模式：(Direct Routing)直接路由模式
 DR模式的网络拓扑：
 ~~~~~~~~~~~~~~~~~~~~
 
-.. image:: http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg
+.. image:: https://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg
    :width: 600
 
 DR模式的工作过程： 
@@ -32,7 +32,7 @@ LVS和Real-server必须在相同的网段
 
 DR模式在转发client的包时，只修改了包目的MAC地址为选定的Real-server的mac地址，所以如果LVS和Real-server在不通的广播域内，那么Real-server就没办法接收到转发的包。下面是mac地址的修改过程：
 
-.. image:: http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg
+.. image:: https://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg
    :width: 600
 
 LVS不需要开启路由转发：
@@ -107,7 +107,7 @@ ARP问题：
 
 **arp报文格式：**
 
-.. image:: http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg
+.. image:: https://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg
 
 请求报文：MAC地址字段是空的。
 应答报文：所有字段都又内容。::
@@ -193,7 +193,7 @@ IP Tunneling模式：
 IP Tunneling的拓扑图
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg
+.. image:: https://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg
    :width: 600
 
 IP Tunneling的工作过程
@@ -213,7 +213,7 @@ IP Tunneling的几个细节问题
 IP封包的过程：(如图)
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. image:: http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg
+.. image:: https://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg
    :width: 600
 
 LVS和Real-server不需要在一个网段：
@@ -257,7 +257,7 @@ i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)
 
 如果添加tunl0失败，那么可能是内核没有开启tunneling功能，默认是以模块形式，加载到内核里的：
 
-.. image:: http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg
+.. image:: https://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg
 
 
 
@@ -277,13 +277,13 @@ NAT模式：
 NAT模式的拓扑图
 ~~~~~~~~~~~~~~~~~~~
 
-.. image:: http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg
+.. image:: https://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg
    :width: 600
 
 NAT模式的工作过程:
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg
+.. image:: https://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg
 
 .. code-block:: rst
 
@@ -304,7 +304,7 @@ NAT模式的工作过程:
 
 下面是地址转换的过程：
 
-.. image:: http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg
+.. image:: https://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg
    :width: 600
 
 NAT模式的几个细节问题
@@ -353,7 +353,7 @@ ICMP重定向问题
 
 2> 删除到网段的路由：
 
-.. image:: http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg
+.. image:: https://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg
    :width: 600
 
 执行：
@@ -364,7 +364,7 @@ ICMP重定向问题
 
 路由已经被删除了：
 
-.. image:: http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg
+.. image:: https://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg
    :width: 600
 
 3> LVS-NAT模式支持四层的端口重写：

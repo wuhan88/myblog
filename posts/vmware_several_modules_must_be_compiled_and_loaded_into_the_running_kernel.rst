@@ -32,4 +32,4 @@ VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel
    # tar -xf source.tar.lzma; 
    # vmware-modconfig --console --install-all
 
-.. image:: http://pavlinux.ru/vmware/8.0.2/make.png
+.. image:: https://pavlinux.ru/vmware/8.0.2/make.png

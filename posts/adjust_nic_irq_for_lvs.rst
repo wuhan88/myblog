@@ -13,11 +13,11 @@
 为什么要配置网卡软中断，主要是因为在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助于提高系统的整体吞吐能力和性能。
 先看下未升级之前的效果：可以看到网卡软中断被分配到了两个指定的CPU核心上:
 
-.. image:: http://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg
+.. image:: https://farm8.staticflickr.com/7067/6928555291_87c0dfcc68_z.jpg
 
 经过升级内核调整参数后的效果：
 
-.. image:: http://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg
+.. image:: https://farm8.staticflickr.com/7061/6928555437_450d1a548b_z.jpg
    :width: 600
 
 软中断被均匀的分配到8个核心上，下面来说下具体过程
@@ -43,7 +43,7 @@
 
 如果你的服务器网卡和我一样是Broadcom的，那么你就得做这一步，不是请跳到第三步
 
-.. image:: http://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg
+.. image:: https://farm8.staticflickr.com/7052/6928573033_5dd56c20dc_z.jpg
    :height: 44
    :width: 600
 
@@ -72,7 +72,7 @@ http://irqbalance.org/
 设置eth0、eth1对应中断号的 ``smp_affinity`` 为 “ff”
 先看一下网卡的中断号： 
 
-.. image:: http://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg
+.. image:: https://farm8.staticflickr.com/7046/6928573141_959e7d24ff_z.jpg
    :width: 600
 
 从图中可以看到网卡eth1的中断号为16,eth0的中断号为18

@@ -41,7 +41,7 @@
 <h1><a class="toc-backref" href="#id12">DR模式：(Direct Routing)直接路由模式</a></h1>
 <div class="section" id="dr">
 <h2><a class="toc-backref" href="#id13">DR模式的网络拓扑：</a></h2>
-<img alt="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" src="http://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" src="https://farm7.static.flickr.com/6236/6322179853_5899c2dfb6_z.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="id1">
 <h2><a class="toc-backref" href="#id14">DR模式的工作过程：</a></h2>
@@ -52,7 +52,7 @@
 <div class="section" id="lvsreal-server">
 <h3><a class="toc-backref" href="#id16">LVS和Real-server必须在相同的网段</a></h3>
 <p>DR模式在转发client的包时，只修改了包目的MAC地址为选定的Real-server的mac地址，所以如果LVS和Real-server在不通的广播域内，那么Real-server就没办法接收到转发的包。下面是mac地址的修改过程：</p>
-<img alt="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" src="http://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" src="https://farm7.static.flickr.com/6100/6322179927_eb8e928a02_z.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="lvs">
 <h3><a class="toc-backref" href="#id17">LVS不需要开启路由转发：</a></h3>
@@ -61,7 +61,7 @@
 <div class="section" id="arp">
 <h3><a class="toc-backref" href="#id18">ARP问题：</a></h3>
 <p>通常，DR模式需要在Real-server上配置VIP，配置的方式为：</p>
-<pre class="code bash"><a name="rest_code_7bc82f92dadd42b68e1c8b359c076481-1"></a>/sbin/ifconfig lo:0 inet VIP netmask <span class="m">255</span>.255.255.255
+<pre class="code bash"><a name="rest_code_2d63e9196905427c99b8db69890e754d-1"></a>/sbin/ifconfig lo:0 inet VIP netmask <span class="m">255</span>.255.255.255
 </pre><p>原因在于，当LVS把client的包转发给Real-server时，因为包的目的IP地址是VIP，那么如果Real-server收到这个包后，发现包的目的IP不是自己的系统IP，那么就会认为这个包不是发给自己的，就会丢弃这个包，所以需要将这个IP地址绑到网卡上；当发送应答包给client时，Real-server就会把包的源和目的地址调换，直接回复给client。</p>
 <p><strong>关于ARP广播：</strong></p>
 <ul class="simple">
@@ -91,10 +91,10 @@ client eth0 00:0c:29:d2:c7:aa 192.168.18.129
 </pre>
 <p>三个端口都发送了arp的reply包，但是192.168.18.129使用的第一个回应的eth4的mac地址作为ping请求的端口，由于192.168.18.10是icmp包中的目的地址，那么ping的应答包，会从eth0端口发出。</p>
 <p>如果Real-server有个多个网卡，每个网卡在不同的网段，那么可以过滤掉非本网卡ARP请求的回应；但是如果多个网卡的ip在一个网段，那么就不行了。</p>
-<pre class="code bash"><a name="rest_code_f5ffeb4b3a644ba88e7b57b9b28b021f-1"></a>sysctl -w net.ipv4.conf.all.arp_filter<span class="o">=</span><span class="m">1</span>
+<pre class="code bash"><a name="rest_code_7c64f21c548048329526c0519182ce4d-1"></a>sysctl -w net.ipv4.conf.all.arp_filter<span class="o">=</span><span class="m">1</span>
 </pre><p>对于多个接口在相同网段可以设置下面的来防止：</p>
-<pre class="code bash"><a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-1"></a>sysctl -w net.ipv4.conf.all.arp_ignore<span class="o">=</span><span class="m">1</span>
-<a name="rest_code_3b1e12873a8f4981b637943c7b517a6c-2"></a>sysctl -w net.ipv4.conf.all.arp_announce<span class="o">=</span><span class="m">2</span>
+<pre class="code bash"><a name="rest_code_c21b2e13e6e54d309ccf7246adab19ed-1"></a>sysctl -w net.ipv4.conf.all.arp_ignore<span class="o">=</span><span class="m">1</span>
+<a name="rest_code_c21b2e13e6e54d309ccf7246adab19ed-2"></a>sysctl -w net.ipv4.conf.all.arp_announce<span class="o">=</span><span class="m">2</span>
 </pre><p>还是从192.168.18.129 ping 192.168.18.10时，tcpdump抓包发现:</p>
 <pre class="literal-block">
 00:0c:29:d2:c7:aa &gt; ff:ff:ff:ff:ff:ff, ARP, length 60: arp who-has 192.168.18.10 tell 192.168.18.129
@@ -108,7 +108,7 @@ client eth0 00:0c:29:d2:c7:aa 192.168.18.129
 </pre>
 <p>看到了么，现在只有eth0会回应arp请求了。</p>
 <p><strong>arp报文格式：</strong></p>
-<img alt="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" src="http://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" />
+<img alt="https://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" src="https://farm7.static.flickr.com/6219/6324726842_6f0aea5dab_z.jpg" />
 <p>请求报文：MAC地址字段是空的。
 应答报文：所有字段都又内容。:</p>
 <pre class="literal-block">
@@ -153,9 +153,9 @@ the level announces more valid sender’s information.
 </ul>
 <p>当内网的机器要发送一个到外部的ip包，那么它就会请求路由器的Mac地址，发送一个arp请求，这个arp请求里面包括了自己的ip地址和Mac地址，而linux默认是使用ip的源ip地址作为arp里面的源ip地址，而不是使用发送设备上面的 ，这样在lvs这样的架构下，所有发送包都是同一个VIP地址，那么arp请求就会包括VIP地址和设备 Mac，而路由器收到这个arp请求就会更新自己的arp缓存，这样就会造成ip欺骗了，VIP被抢夺，所以就会有问题。</p>
 <p>现在假设一个场景来解释 <tt class="docutils literal">arp_announce</tt> ：</p>
-<pre class="code rst"><a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-1"></a>Real-server的ip地址：202.106.1.100(public local address)，
-<a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-2"></a>172.16.1.100(private local address)，
-<a name="rest_code_8b6661c19d7c4fc69bed9c45776ebf43-3"></a>202.106.1.254(VIP)
+<pre class="code rst"><a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-1"></a>Real-server的ip地址：202.106.1.100(public local address)，
+<a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-2"></a>172.16.1.100(private local address)，
+<a name="rest_code_9c9cd5731daf45809234740c0fa68fe6-3"></a>202.106.1.254(VIP)
 </pre><p>如果发送到client的ip包产生的arp请求的源地址是202.106.1.254(VIP),那么LVS上的VIP就会被冲掉，因为交换机上现在的arp对应关系是Real-server上的VIP对应自己的一个MAC，那么LVS上的VIP就失效了。:</p>
 <pre class="literal-block">
 arp_ignore – INTEGER
@@ -187,7 +187,7 @@ when ARP request is received on the {interface}
 <h1><a class="toc-backref" href="#id19">IP Tunneling模式：</a></h1>
 <div class="section" id="id3">
 <h2><a class="toc-backref" href="#id20">IP Tunneling的拓扑图</a></h2>
-<img alt="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" src="http://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" src="https://farm7.static.flickr.com/6094/6323980713_082c909dd5_b.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="id4">
 <h2><a class="toc-backref" href="#id21">IP Tunneling的工作过程</a></h2>
@@ -200,7 +200,7 @@ when ARP request is received on the {interface}
 <h2><a class="toc-backref" href="#id22">IP Tunneling的几个细节问题</a></h2>
 <div class="section" id="ip">
 <h3><a class="toc-backref" href="#id23">IP封包的过程：(如图)</a></h3>
-<img alt="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" src="http://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" src="https://farm7.static.flickr.com/6237/6324734370_e543f436fb_z.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="id6">
 <h3><a class="toc-backref" href="#id24">LVS和Real-server不需要在一个网段：</a></h3>
@@ -210,24 +210,24 @@ when ARP request is received on the {interface}
 <h3><a class="toc-backref" href="#id25">Real-server的系统设置：</a></h3>
 <p>由于需要Real-server支持IP Tunneling，所以设置与DR模式不太一样，LVS不需要设置tunl设备，LVS本身可以进行封装
 i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)</p>
-<pre class="code bash"><a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-1"></a>shell&gt; ifconfig tunl0 <span class="m">172</span>.16.1.254 netmask <span class="m">255</span>.255.255.255
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-2"></a>shell&gt; ifconfig tunl0
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-3"></a>tunl0 Link encap:IPIP Tunnel HWaddr
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-4"></a>inet addr:172.16.1.254 Mask:255.255.255.255
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-5"></a>UP RUNNING NOARP MTU:1480 Metric:1
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-6"></a>RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-7"></a>TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-8"></a>collisions:0 txqueuelen:0
-<a name="rest_code_562b75f3879c4217b8dcd2dc1ea51b7c-9"></a>RX bytes:0 <span class="o">(</span><span class="m">0</span>.0 b<span class="o">)</span> TX bytes:0 <span class="o">(</span><span class="m">0</span>.0 b<span class="o">)</span>
+<pre class="code bash"><a name="rest_code_4e1c705b8f594e569a0f56e025845352-1"></a>shell&gt; ifconfig tunl0 <span class="m">172</span>.16.1.254 netmask <span class="m">255</span>.255.255.255
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-2"></a>shell&gt; ifconfig tunl0
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-3"></a>tunl0 Link encap:IPIP Tunnel HWaddr
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-4"></a>inet addr:172.16.1.254 Mask:255.255.255.255
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-5"></a>UP RUNNING NOARP MTU:1480 Metric:1
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-6"></a>RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-7"></a>TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-8"></a>collisions:0 txqueuelen:0
+<a name="rest_code_4e1c705b8f594e569a0f56e025845352-9"></a>RX bytes:0 <span class="o">(</span><span class="m">0</span>.0 b<span class="o">)</span> TX bytes:0 <span class="o">(</span><span class="m">0</span>.0 b<span class="o">)</span>
 </pre><p>当添加tunl0设备时，自动载入需要的模块：</p>
-<pre class="code bash"><a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-1"></a>shell&gt; lsmod <span class="p">|</span>grep ipip
-<a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-2"></a>ipip <span class="m">7516</span> <span class="m">0</span>
-<a name="rest_code_61c37e6ecb124edbb91d96007a7f067f-3"></a>tunnel4 <span class="m">2700</span> <span class="m">1</span> ipip
+<pre class="code bash"><a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-1"></a>shell&gt; lsmod <span class="p">|</span>grep ipip
+<a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-2"></a>ipip <span class="m">7516</span> <span class="m">0</span>
+<a name="rest_code_b4d6c8f2deff4a139610cfdbfa72b4a7-3"></a>tunnel4 <span class="m">2700</span> <span class="m">1</span> ipip
 </pre><p>其中，ipip依赖于tunnel4，假如现在删除tunnel4的话：</p>
-<pre class="code bash"><a name="rest_code_3bdb51da668e412682b13029e9bb0a82-1"></a>shell&gt; rmmod tunnel4
-<a name="rest_code_3bdb51da668e412682b13029e9bb0a82-2"></a>ERROR: Module tunnel4 is in use by ipip
+<pre class="code bash"><a name="rest_code_4c0cc320ea3746b0afe50390e2674451-1"></a>shell&gt; rmmod tunnel4
+<a name="rest_code_4c0cc320ea3746b0afe50390e2674451-2"></a>ERROR: Module tunnel4 is in use by ipip
 </pre><p>如果添加tunl0失败，那么可能是内核没有开启tunneling功能，默认是以模块形式，加载到内核里的：</p>
-<img alt="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" src="http://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" />
+<img alt="https://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" src="https://farm7.static.flickr.com/6115/6323980779_b0369d8de9.jpg" />
 </div>
 <div class="section" id="id7">
 <h3><a class="toc-backref" href="#id26">ARP问题：</a></h3>
@@ -243,21 +243,21 @@ i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)</p>
 <h1><a class="toc-backref" href="#id28">NAT模式：</a></h1>
 <div class="section" id="id9">
 <h2><a class="toc-backref" href="#id29">NAT模式的拓扑图</a></h2>
-<img alt="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" src="http://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" src="https://farm7.static.flickr.com/6099/6323980789_b90f2546bf_b.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="id10">
 <h2><a class="toc-backref" href="#id30">NAT模式的工作过程:</a></h2>
-<img alt="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" src="http://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" />
-<pre class="code rst"><a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-1"></a>client：202.100.1.2
-<a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-2"></a>VIP：202.103.106.5
-<a name="rest_code_da0eb076363543b597d3ae26d9bec0ad-3"></a>Real-server：172.16.0.2 和 172.16.0.3（提供http和ftp服务）
+<img alt="https://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" src="https://farm7.static.flickr.com/6117/6324734426_fc573643bf.jpg" />
+<pre class="code rst"><a name="rest_code_afb854615c604530a29c2417c9ae31e3-1"></a>client：202.100.1.2
+<a name="rest_code_afb854615c604530a29c2417c9ae31e3-2"></a>VIP：202.103.106.5
+<a name="rest_code_afb854615c604530a29c2417c9ae31e3-3"></a>Real-server：172.16.0.2 和 172.16.0.3（提供http和ftp服务）
 </pre><p>1&gt; client发送request到LVS的VIP上，VIP选择一个Real-server，并记录连接信息到hash表中，然后修改client的request的目的IP地址为Real-server的地址，将请求发给Real-server;</p>
 <p>2&gt; Real-server收到request包后，发现目的IP是自己的IP，于是处理请求，然后发送reply给LVS;</p>
 <p>3&gt; LVS收到reply包后，修改reply包的的源地址为VIP，发送给client;</p>
 <p>4&gt; 从client来的属于本次连接的包，查hash表，然后发给对应的Real-server。</p>
 <p>5&gt; 当client发送完毕，此次连接结束或者连接超时，那么LVS自动从hash表中删除此条记录。</p>
 <p>下面是地址转换的过程：</p>
-<img alt="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" src="http://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" src="https://farm7.static.flickr.com/6239/6323980835_6e32e61090_b.jpg" style="width: 600px;" />
 </div>
 <div class="section" id="id11">
 <h2><a class="toc-backref" href="#id31">NAT模式的几个细节问题</a></h2>
@@ -292,14 +292,14 @@ i) 需要配置VIP在tunl设备上：(VIP：172.16.1.254)</p>
 <p>重定向的处理办法（Real-server的配置）：</p>
 <p>1&gt; 关闭Real-server的重定向，忽略LVS发来的重定向包</p>
 <p>2&gt; 删除到网段的路由：</p>
-<img alt="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" src="http://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" src="https://farm7.static.flickr.com/6105/6324754200_9780818531_z.jpg" style="width: 600px;" />
 <p>执行：</p>
-<pre class="code bash"><a name="rest_code_3534305f9d9e4f658c7bfd083be656c1-1"></a>realserver:/etc/lvs#route del -net <span class="m">192</span>.168.1.0 netmask <span class="m">255</span>.255.255.0 dev eth0
+<pre class="code bash"><a name="rest_code_0e52c0edfede4d1484e2327eeb356c8c-1"></a>realserver:/etc/lvs#route del -net <span class="m">192</span>.168.1.0 netmask <span class="m">255</span>.255.255.0 dev eth0
 </pre><p>路由已经被删除了：</p>
-<img alt="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" src="http://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" style="width: 600px;" />
+<img alt="https://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" src="https://farm7.static.flickr.com/6214/6324754218_a6258829e5_z.jpg" style="width: 600px;" />
 <p>3&gt; LVS-NAT模式支持四层的端口重写：
 LVS-DR，LVS-TUN不能修改client发来的请求的目的端口，但是LVS-NAT可以，参考命令：</p>
-<pre class="code bash"><a name="rest_code_a7053a6227a74681930a7b1ecd35b8a9-1"></a>shell&gt; ipvsadm -a -t VIP:PORT -r RIP:NEWPORT -m -w <span class="m">1</span>
+<pre class="code bash"><a name="rest_code_6eec0ab135004417a7772a74f74fd072-1"></a>shell&gt; ipvsadm -a -t VIP:PORT -r RIP:NEWPORT -m -w <span class="m">1</span>
 </pre><p>LVS的三种转发模式就先说到这吧，具体的细节可以参考LVS的HOWTO文档。</p>
 </div>
 </div>
