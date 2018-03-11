@@ -1,0 +1,65 @@
+<div class="section" id="id1">
+<h1>问题</h1>
+<p>在一个django应用中需要定时执行一些任务，所以用了APScheduler这个库。在开发中直接测试运行是没有问题的，但是用gunicorn部署以后发生了重复运行的问题：每个任务在时间到的时刻会同时执行好几遍。注意了一下重复的数量，恰恰是gunicorn里配置的worker进程数量，显然是每个worker进程都启动了一份scheduler造成。</p>
+</div>
+<div class="section" id="id2">
+<h1>解决</h1>
+<p>可以想到的方案有几个：</p>
+<blockquote>
+<ul class="simple">
+<li>用--preload启动gunicorn，确保scheduler只在loader的时候创建一次</li>
+<li>另外创建一个单独的定时任务项目，单独以一个进程运行</li>
+<li>用全局锁确保scheduler只运行一次</li>
+</ul>
+</blockquote>
+<p>经过实践，只有第三个方案比较好。</p>
+<ol class="arabic simple">
+<li>preload的问题：</li>
+</ol>
+<blockquote>
+虽然这样可以使用scheduler创建代码只执行一次，但是问题也在于它只执行一次，重新部署以后如果用kill -HUP重启gunicorn，它并不会重启，甚至整个项目都不会更新。这是preload的副作用，除非重写部署脚本，完全重启应用。</blockquote>
+<ol class="arabic simple" start="2">
+<li>单独进程的问题：</li>
+</ol>
+<blockquote>
+也是因为部署麻烦，需要多一套部署方案，虽然用Docker会比较方便，但仍然不喜欢，而且同时维护两个项目也多出很多不必要的事情。</blockquote>
+<ol class="arabic simple" start="3">
+<li>全局锁是一个较好的方案，但问题在于找一个合适的锁。</li>
+</ol>
+<blockquote>
+python自带的多进程多线程锁方案都需要一个共享变量来维护，但是因为worker进程是被gunicorn的主进程启动的，并不方便自己维护，所以需要一个系统级的锁。在Stackoverflow上看到有人是用了一个socket端口来做锁实现这个方案，但是我也不喜欢这样浪费一个宝贵的端口资源。不过这倒给了我一个启发，可以用文件锁，于是有了这个解决方案：</blockquote>
+<pre class="code python"><a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-1"></a><span class="kn">import</span> <span class="nn">atexit</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-2"></a><span class="kn">import</span> <span class="nn">fcntl</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-3"></a><span class="kn">from</span> <span class="nn">apscheduler.scheduler</span> <span class="kn">import</span> <span class="n">Scheduler</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-4"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-5"></a><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;scheduler.lock&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-6"></a><span class="k">try</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-7"></a>    <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-8"></a><span class="k">except</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-9"></a>    <span class="k">pass</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-10"></a><span class="k">else</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-11"></a>    <span class="n">sched</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-12"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-13"></a>    <span class="nd">@sched.interval_schedule</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-14"></a>    <span class="k">def</span> <span class="nf">mytask</span><span class="p">():</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-15"></a>    <span class="sd">&#39;&#39;&#39;</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-16"></a><span class="sd">    定义你的定时任务执行的内容</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-17"></a><span class="sd">    &#39;&#39;&#39;</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-18"></a>        <span class="k">pass</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-19"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-20"></a>    <span class="n">sched</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-21"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-22"></a><span class="k">def</span> <span class="nf">unlock</span><span class="p">():</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-23"></a>    <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-24"></a>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-25"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-26"></a><span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">unlock</span><span class="p">)</span>
+</pre></div>
+<div class="section" id="id3">
+<h1>原理</h1>
+<blockquote>
+<p>首先打开（或创建）一个scheduler.lock文件，并加上非阻塞互斥锁。成功后创建scheduler并启动。</p>
+<p>如果加文件锁失败，说明scheduler已经创建，就略过创建scheduler的部分。</p>
+<p>最后注册一个退出事件，如果这个django退出，则解锁并关闭scheduler.lock文件的锁。</p>
+</blockquote>
+</div>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="zh_cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>解决django使用多进程部署时apscheduler重复运行的问题 | Jason Wu's Thoughts and Writings</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://vimer.im/posts/Solving-the-problem-of-APScheduler-duplication-in-multi-process/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="JasonWu">
+<link rel="prev" href="../search_for_an_item_in_a_lua_list/" title="如何判断一个值在lua的table里" type="text/html">
+<meta property="og:site_name" content="Jason Wu's Thoughts and Writings">
+<meta property="og:title" content="解决django使用多进程部署时apscheduler重复运行的问题">
+<meta property="og:url" content="https://vimer.im/posts/Solving-the-problem-of-APScheduler-duplication-in-multi-process/">
+<meta property="og:description" content="问题
+在一个django应用中需要定时执行一些任务，所以用了APScheduler这个库。在开发中直接测试运行是没有问题的，但是用gunicorn部署以后发生了重复运行的问题：每个任务在时间到的时刻会同时执行好几遍。注意了一下重复的数量，恰恰是gunicorn里配置的worker进程数量，显然是每个worker进程都启动了一份scheduler造成。
+
+
+解决
+可以想到的方案有几个：
+
+
+用--p">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2018-03-11T10:45:42+08:00">
+<meta property="article:tag" content="apscheduler">
+<meta property="article:tag" content="django">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">跳到主内容</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://vimer.im/">
+
+                <span id="blog-title">Jason Wu's Thoughts and Writings</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">源代码</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">解决django使用多进程部署时apscheduler重复运行的问题</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                    JasonWu
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2018-03-11T10:45:42+08:00" itemprop="datePublished" title="2018-03-11 10:45">2018-03-11 10:45</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/Solving-the-problem-of-APScheduler-duplication-in-multiprocess.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" class="sourcelink">源代码</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<div class="section" id="id1">
+<h2>问题</h2>
+<p>在一个django应用中需要定时执行一些任务，所以用了APScheduler这个库。在开发中直接测试运行是没有问题的，但是用gunicorn部署以后发生了重复运行的问题：每个任务在时间到的时刻会同时执行好几遍。注意了一下重复的数量，恰恰是gunicorn里配置的worker进程数量，显然是每个worker进程都启动了一份scheduler造成。</p>
+</div>
+<div class="section" id="id2">
+<h2>解决</h2>
+<p>可以想到的方案有几个：</p>
+<blockquote>
+<ul class="simple">
+<li>用--preload启动gunicorn，确保scheduler只在loader的时候创建一次</li>
+<li>另外创建一个单独的定时任务项目，单独以一个进程运行</li>
+<li>用全局锁确保scheduler只运行一次</li>
+</ul>
+</blockquote>
+<p>经过实践，只有第三个方案比较好。</p>
+<ol class="arabic simple">
+<li>preload的问题：</li>
+</ol>
+<blockquote>
+虽然这样可以使用scheduler创建代码只执行一次，但是问题也在于它只执行一次，重新部署以后如果用kill -HUP重启gunicorn，它并不会重启，甚至整个项目都不会更新。这是preload的副作用，除非重写部署脚本，完全重启应用。</blockquote>
+<ol class="arabic simple" start="2">
+<li>单独进程的问题：</li>
+</ol>
+<blockquote>
+也是因为部署麻烦，需要多一套部署方案，虽然用Docker会比较方便，但仍然不喜欢，而且同时维护两个项目也多出很多不必要的事情。</blockquote>
+<ol class="arabic simple" start="3">
+<li>全局锁是一个较好的方案，但问题在于找一个合适的锁。</li>
+</ol>
+<blockquote>
+python自带的多进程多线程锁方案都需要一个共享变量来维护，但是因为worker进程是被gunicorn的主进程启动的，并不方便自己维护，所以需要一个系统级的锁。在Stackoverflow上看到有人是用了一个socket端口来做锁实现这个方案，但是我也不喜欢这样浪费一个宝贵的端口资源。不过这倒给了我一个启发，可以用文件锁，于是有了这个解决方案：</blockquote>
+<pre class="code python"><a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-1"></a><span class="kn">import</span> <span class="nn">atexit</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-2"></a><span class="kn">import</span> <span class="nn">fcntl</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-3"></a><span class="kn">from</span> <span class="nn">apscheduler.scheduler</span> <span class="kn">import</span> <span class="n">Scheduler</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-4"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-5"></a><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"scheduler.lock"</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-6"></a><span class="k">try</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-7"></a>    <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-8"></a><span class="k">except</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-9"></a>    <span class="k">pass</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-10"></a><span class="k">else</span><span class="p">:</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-11"></a>    <span class="n">sched</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-12"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-13"></a>    <span class="nd">@sched.interval_schedule</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-14"></a>    <span class="k">def</span> <span class="nf">mytask</span><span class="p">():</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-15"></a>    <span class="sd">'''</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-16"></a><span class="sd">    定义你的定时任务执行的内容</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-17"></a><span class="sd">    '''</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-18"></a>        <span class="k">pass</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-19"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-20"></a>    <span class="n">sched</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-21"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-22"></a><span class="k">def</span> <span class="nf">unlock</span><span class="p">():</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-23"></a>    <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-24"></a>    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-25"></a>
+<a name="rest_code_5903de726fc74f2daeba9cdfc30975b9-26"></a><span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">unlock</span><span class="p">)</span>
+</pre>
+</div>
+<div class="section" id="id3">
+<h2>原理</h2>
+<blockquote>
+<p>首先打开（或创建）一个scheduler.lock文件，并加上非阻塞互斥锁。成功后创建scheduler并启动。</p>
+<p>如果加文件锁失败，说明scheduler已经创建，就略过创建scheduler的部分。</p>
+<p>最后注册一个退出事件，如果这个django退出，则解锁并关闭scheduler.lock文件的锁。</p>
+</blockquote>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/apscheduler/" rel="tag">apscheduler</a></li>
+            <li><a class="tag p-category" href="../../categories/django/" rel="tag">django</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../search_for_an_item_in_a_lua_list/" rel="prev" title="如何判断一个值在lua的table里">前一篇</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>注释</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="jasonwu",
+            disqus_url="https://vimer.im/posts/Solving-the-problem-of-APScheduler-duplication-in-multi-process/",
+        disqus_title="\u89e3\u51b3django\u4f7f\u7528\u591a\u8fdb\u7a0b\u90e8\u7f72\u65f6apscheduler\u91cd\u590d\u8fd0\u884c\u7684\u95ee\u9898",
+        disqus_identifier="cache/posts/Solving-the-problem-of-APScheduler-duplication-in-multiprocess.html",
+        disqus_config = function () {
+            this.language = "zh_cn";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="jasonwu";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:jasonwux@gmail.com">JasonWu</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script src="../../assets/js/colorbox-i18n/jquery.colorbox-zh-CN.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("zh-cn");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

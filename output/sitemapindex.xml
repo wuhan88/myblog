@@ -22,6 +22,10 @@
   <lastmod>2018-02-24T08:13:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>https://vimer.im/categories/apscheduler.xml</loc>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>https://vimer.im/categories/autoconf.xml</loc>
   <lastmod>2018-02-24T08:13:00Z</lastmod>
  </sitemap>
@@ -59,7 +63,7 @@
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/django.xml</loc>
-  <lastmod>2018-02-24T08:13:00Z</lastmod>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/categories/dns.xml</loc>
@@ -195,10 +199,10 @@
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/rss.xml</loc>
-  <lastmod>2018-02-24T09:49:00Z</lastmod>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://vimer.im/sitemap.xml</loc>
-  <lastmod>2018-02-24T09:49:00Z</lastmod>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
  </sitemap>
 </sitemapindex>

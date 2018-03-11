@@ -27,7 +27,7 @@
  </url>
  <url>
   <loc>https://vimer.im/archive.html</loc>
-  <lastmod>2018-02-24T08:35:00Z</lastmod>
+  <lastmod>2018-03-11T03:05:00Z</lastmod>
  </url>
  <url>
   <loc>https://vimer.im/authors/</loc>
@@ -47,11 +47,15 @@
  </url>
  <url>
   <loc>https://vimer.im/categories/</loc>
-  <lastmod>2018-02-24T08:13:00Z</lastmod>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
  </url>
  <url>
   <loc>https://vimer.im/categories/aclocal/</loc>
   <lastmod>2018-02-24T08:13:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://vimer.im/categories/apscheduler/</loc>
+  <lastmod>2018-03-11T03:09:00Z</lastmod>
  </url>
  <url>
   <loc>https://vimer.im/categories/autoconf/</loc>
@@ -227,7 +231,7 @@
  </url>
  <url>
   <loc>https://vimer.im/index-1.html</loc>
-  <lastmod>2018-02-24T09:49:00Z</lastmod>
+  <lastmod>2018-03-11T03:05:00Z</lastmod>
  </url>
  <url>
   <loc>https://vimer.im/listings/</loc>
@@ -300,6 +304,10 @@
  <url>
   <loc>https://vimer.im/pages/theming/</loc>
   <lastmod>2018-02-05T11:16:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://vimer.im/posts/Solving-the-problem-of-APScheduler-duplication-in-multi-process/</loc>
+  <lastmod>2018-03-11T03:05:00Z</lastmod>
  </url>
  <url>
   <loc>https://vimer.im/posts/VMware-several-modules-must-be-compiled-and-loaded-into-the-running-kernel/</loc>
